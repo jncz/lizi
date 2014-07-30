@@ -63,6 +63,14 @@ function goRight(e){
 	return e.keyCode == 39;
 }
 
+function goUp(e){
+	return e.keyCode == 38;
+}
+
+function goDown(e){
+	return e.keyCode == 40;
+}
+
 function goFire(e){
 	return e.keyCode == 32;
 }

@@ -1,7 +1,7 @@
 /**
 用于启动动画
 */
-var imageAddress = ["Actor1.png","map.png","donghua.png","eff.png","1.png"];
+var imageAddress = ["Actor1.png","map.png","donghua.png","eff.png"];
 
 var xmlAddress = ["spirit.xml","eff.xml"];
 
@@ -14,6 +14,7 @@ window.onload=function(){
 	loadResource();
 }
 
+var direction;
 //定义场景管理器
 var stage2d;
 //初始化函数
@@ -26,9 +27,10 @@ function init () {
     
 	initGround();
 	
-	addRandomClip(1);
+	addActorClip();
+	//addRandomClip(10);
 	
-	addXMLClip();
+	//addXMLClip();
 	
 	addEvent();
 	
@@ -44,7 +46,7 @@ function addEvent(){
 	stage2d.addEventListener(eventObj1);
 	
 	var eventObj2 = new Event2D();
-	eventObj2.eventType = "keyDown";
+	eventObj2.eventType = "keyDowns";
 	eventObj2.callback = function(e){
 		//actor.rotation = 30;
 		console.log(e.keyCode);
@@ -59,6 +61,43 @@ function addEvent(){
 	};
 	
 	stage2d.addEventListener(eventObj2);
+	
+	var eventObj3 = new Event2D();
+	eventObj3.eventType = "keyDown";
+	eventObj3.callback = function(e){
+		console.log(e.keyCode);
+		if(goLeft(e)){
+			if(direction != "left"){
+				actor.frameHeadX = 0;
+				actor.frameHeadY = 1;
+				direction = "left";
+			}
+			actor.x-=5;
+		}else if(goRight(e)){
+			if(direction != "right"){
+				actor.frameHeadX = 0;
+				actor.frameHeadY = 2;
+				direction = "right";
+			}
+			actor.x+=5;
+		}else if(goUp(e)){
+			if(direction != "up"){
+				actor.frameHeadX = 0;
+				actor.frameHeadY = 3;
+				direction = "up";
+			}
+			actor.y-=5;
+		}else if(goDown(e)){
+			if(direction != "down"){
+				actor.frameHeadX = 0;
+				actor.frameHeadY = 0;
+				direction = "down";
+			}
+			actor.y+=5;
+		}
+	};
+	
+	stage2d.addEventListener(eventObj3);
 }
 
 function fire(){
@@ -145,5 +184,24 @@ function addRandomClip(objSize){
 		
 		stage2d.addChild(mc);
 	}
+}
+
+function addActorClip(){
+	var mc = new MovieClip2D(imageLoaded[0]);
+	mc.isPlay = 1;
+	mc.x = stageWidth*Math.random();
+	mc.y = stageHeight*Math.random();
+	
+	mc.frameW = 32;
+	mc.frameH = 32;
+	
+	mc.frameHeadX = 0;
+	mc.frameHeadY = 0;
+	
+	mc.totalFrames = 3;
+	
+	stage2d.addChild(mc);
+	
+	actor = mc;
 }
 
