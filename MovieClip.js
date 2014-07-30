@@ -19,6 +19,17 @@ function MovieClip2D(img,data){
 	this.frameHeadX = 0;
 	//动画播放头Y位置
 	this.frameHeadY = 0;
+	/**
+	动画播放头X,Y含义，见下图：
+	1,1,1,2,2,2,3,3,3
+	4,4,4,5,5,5,6,6,6
+	7,7,7,8,8,8,9,9,9
+	假设上图中的1.。。9分别为9组不同的动画，数字相同的为一组。
+	如果frameHeadX = 0, frameHeadY = 0,则表示当前的帧为第0行，第0列所对应的图像
+	如果frameHeadX = 0, frameHeadY = 1,则表示当前的帧为第1行，第0列所对应的图像
+	配合上totalFrames参数， 比如对于这个图来说，每组动画为3帧，则这个数值为3，会将第0个到第2个的帧依次播放形成动画
+	动画间隙由animationSpeed控制
+	*/
 	//总帧数
 	this.totalFrames = 0;
 	
