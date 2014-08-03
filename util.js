@@ -71,6 +71,18 @@ function goDown(e){
 	return e.keyCode == 40;
 }
 
+function getDirection(e){
+	if(goLeft(e)){
+		return DIRECTION_LEFT;
+	}else if(goRight(e)){
+		return DIRECTION_RIGHT;
+	}else if(goUp(e)){
+		return DIRECTION_UP;
+	}else if(goDown(e)){
+		return DIRECTION_DOWN;
+	}
+}
+
 function goFire(e){
 	return e.keyCode == 32;
 }

@@ -25,10 +25,12 @@ function init () {
     //启用场景逻辑
     stage2d.init();
     
-	//initGround();
+	initGround();
 	
 	addActorClip();
-	//addActorClip();
+	addActorClip();
+	addActorClip();
+	addActorClip();
 	
 	addMainActorClip();//主角，用户可控制的对象
 	
@@ -160,11 +162,12 @@ function addMainActorClip(){
 	mc.y = stageHeight*Math.random();
 	
 	mc.totalFrames = 3;
+	mc.ifReverse = false;
 	
 	mc.moveDirection = [DIRECTION_LEFT,DIRECTION_RIGHT];
 	
-	mc.faceRight = [0,1];
-	mc.faceLeft = [0,2];
+	mc.faceRight = [0,2];
+	mc.faceLeft = [0,1];
 	mc.faceUp = [0,3];
 	mc.faceDown = [0,0];
 	
@@ -172,31 +175,7 @@ function addMainActorClip(){
 	
 	mc.addEventListener("keyDown",function(e){
 		var step = 2;
-		if(goLeft(e)){
-			if(actor.selectedDirection != DIRECTION_RIGHT){
-				changeFace(mc,mc.faceRight);
-				actor.selectedDirection == DIRECTION_RIGHT;
-			}
-			actor.x-=step;
-		}else if(goRight(e)){
-			if(actor.selectedDirection != DIRECTION_LEFT){
-				changeFace(mc,mc.faceLeft);
-				actor.selectedDirection == DIRECTION_LEFT;
-			}
-			actor.x+=step;
-		}else if(goUp(e)){
-			if(actor.selectedDirection != DIRECTION_UP){
-				changeFace(mc,mc.faceUp);
-				actor.selectedDirection == DIRECTION_UP;
-			}
-			actor.y-=step;
-		}else if(goDown(e)){
-			if(actor.selectedDirection != DIRECTION_DOWN){
-				changeFace(mc,mc.faceDown);
-				actor.selectedDirection == DIRECTION_DOWN;
-			}
-			actor.y+=step;
-		}
+		mc.movement(getDirection(e),step);
 	});
 	
 	regAsMainActor(mc);
