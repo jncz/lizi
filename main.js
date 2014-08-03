@@ -25,16 +25,20 @@ function init () {
     //启用场景逻辑
     stage2d.init();
     
-	initGround();
+	//initGround();
 	
 	addActorClip();
+	//addActorClip();
+	
+	addMainActorClip();//主角，用户可控制的对象
+	
 	//addRandomClip(10);
 	
 	//addXMLClip();
 	
-	addEvent();
+	//addEvent();
 	
-	initEvent();
+	//initEvent();
 }
 
 function addEvent(){
@@ -44,60 +48,6 @@ function addEvent(){
 		ele.rotation = 30;
 	};
 	stage2d.addEventListener(eventObj1);
-	
-	var eventObj2 = new Event2D();
-	eventObj2.eventType = "keyDowns";
-	eventObj2.callback = function(e){
-		//actor.rotation = 30;
-		console.log(e.keyCode);
-		if(goLeft(e)){
-			actor.x-=5;
-		}else if(goRight(e)){
-			actor.x+=5;
-		}else if(goFire(e)){
-			//fire
-			fire();
-		}
-	};
-	
-	stage2d.addEventListener(eventObj2);
-	
-	var eventObj3 = new Event2D();
-	eventObj3.eventType = "keyDown";
-	eventObj3.callback = function(e){
-		console.log(e.keyCode);
-		if(goLeft(e)){
-			if(direction != "left"){
-				actor.frameHeadX = 0;
-				actor.frameHeadY = 1;
-				direction = "left";
-			}
-			actor.x-=5;
-		}else if(goRight(e)){
-			if(direction != "right"){
-				actor.frameHeadX = 0;
-				actor.frameHeadY = 2;
-				direction = "right";
-			}
-			actor.x+=5;
-		}else if(goUp(e)){
-			if(direction != "up"){
-				actor.frameHeadX = 0;
-				actor.frameHeadY = 3;
-				direction = "up";
-			}
-			actor.y-=5;
-		}else if(goDown(e)){
-			if(direction != "down"){
-				actor.frameHeadX = 0;
-				actor.frameHeadY = 0;
-				direction = "down";
-			}
-			actor.y+=5;
-		}
-	};
-	
-	stage2d.addEventListener(eventObj3);
 }
 
 function fire(){
@@ -153,6 +103,8 @@ function addXMLClip(){
 	
 }
 function initGround(){
+	var bg = new BackGround(imageLoaded[1]);
+	//stage2d.addChild(bg);
 	for(var i=0;i<40;i++){
 		for(var j=0;j<40;j++){
 			var mc = new MovieClip2D(imageLoaded[1]);
@@ -187,21 +139,80 @@ function addRandomClip(objSize){
 }
 
 function addActorClip(){
-	var mc = new MovieClip2D(imageLoaded[0]);
+	var mc = createMovementObj();//new MovementObject(imageLoaded[0]);
 	mc.isPlay = 1;
 	mc.x = stageWidth*Math.random();
 	mc.y = stageHeight*Math.random();
 	
-	mc.frameW = 32;
-	mc.frameH = 32;
-	
-	mc.frameHeadX = 0;
-	mc.frameHeadY = 0;
-	
 	mc.totalFrames = 3;
+	
+	mc.moveDirection = [DIRECTION_LEFT,DIRECTION_RIGHT];
 	
 	stage2d.addChild(mc);
 	
-	actor = mc;
+	mc.move();
 }
 
+function addMainActorClip(){
+	var mc = createMovementObj();//new MovementObject(imageLoaded[0]);
+	mc.isPlay = 1;
+	mc.x = stageWidth*Math.random();
+	mc.y = stageHeight*Math.random();
+	
+	mc.totalFrames = 3;
+	
+	mc.moveDirection = [DIRECTION_LEFT,DIRECTION_RIGHT];
+	
+	mc.faceRight = [0,1];
+	mc.faceLeft = [0,2];
+	mc.faceUp = [0,3];
+	mc.faceDown = [0,0];
+	
+	stage2d.addChild(mc);
+	
+	mc.addEventListener("keyDown",function(e){
+		var step = 2;
+		if(goLeft(e)){
+			if(actor.selectedDirection != DIRECTION_RIGHT){
+				changeFace(mc,mc.faceRight);
+				actor.selectedDirection == DIRECTION_RIGHT;
+			}
+			actor.x-=step;
+		}else if(goRight(e)){
+			if(actor.selectedDirection != DIRECTION_LEFT){
+				changeFace(mc,mc.faceLeft);
+				actor.selectedDirection == DIRECTION_LEFT;
+			}
+			actor.x+=step;
+		}else if(goUp(e)){
+			if(actor.selectedDirection != DIRECTION_UP){
+				changeFace(mc,mc.faceUp);
+				actor.selectedDirection == DIRECTION_UP;
+			}
+			actor.y-=step;
+		}else if(goDown(e)){
+			if(actor.selectedDirection != DIRECTION_DOWN){
+				changeFace(mc,mc.faceDown);
+				actor.selectedDirection == DIRECTION_DOWN;
+			}
+			actor.y+=step;
+		}
+	});
+	
+	regAsMainActor(mc);
+}
+
+function createMovementObj(){
+	var obj = new MovementObject(imageLoaded[0]);
+	extend(obj,new MovieClip2D());
+	return obj;
+}
+
+function regAsMainActor(obj){
+	actor = obj;
+}
+
+function changeFace(targetObj,face){
+	targetObj.frameHeadX = face[0];
+	targetObj.frameHeadY = face[1];
+}

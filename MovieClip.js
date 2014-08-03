@@ -1,4 +1,6 @@
 function MovieClip2D(img,data){
+	this.img = img;
+	this.data = data;
 	this.x = 0;
 	this.y = 0;
 	this.rotation = 0;
@@ -6,6 +8,7 @@ function MovieClip2D(img,data){
 	this.scaleY = 1;
 	this.visible = true;
 	this.alpha = 1;
+	this.direction = "left";//物体朝向，默认向左
 	//偏移, 从大图上哪个坐标点开始切图
 	this.mcX = 0;
 	this.mcY = 0;
@@ -13,7 +16,6 @@ function MovieClip2D(img,data){
 	this.frameW = 32;
 	this.frameH = 32;
 	
-	this.totalFrames = 1;
 	this.currentFrame = 0;
 	//动画播放头X位置
 	this.frameHeadX = 0;
@@ -74,16 +76,16 @@ function MovieClip2D(img,data){
 			
 			switch(this.isPlay){
 				case 1://From static image
-					context.drawImage(img,this.mcX,this.mcY,this.frameW,this.frameH,-this.frameW/2,-this.frameH/2,this.frameW,this.frameH);
+					context.drawImage(this.img,this.mcX,this.mcY,this.frameW,this.frameH,-this.frameW/2,-this.frameH/2,this.frameW,this.frameH);
 					break;
 				case 2://From xml definition
-					context.drawImage(img,this.mcX,this.mcY,this.width,this.height,
+					context.drawImage(this.img,this.mcX,this.mcY,this.width,this.height,
                         -(this.frameX)-this.frameWidth/2,
                         -(this.frameY)-this.frameHeight/2
                         ,this.width,this.height);
 					break;
 				default:
-					context.drawImage(img,this.mcX,this.mcY,this.frameW,this.frameH,-this.frameW/2,-this.frameH/2,this.frameW,this.frameH);
+					context.drawImage(this.img,this.mcX,this.mcY,this.frameW,this.frameH,-this.frameW/2,-this.frameH/2,this.frameW,this.frameH);
 					break;
 			}
 			
@@ -98,15 +100,16 @@ function MovieClip2D(img,data){
 				this.mcX = this.frameHeadX*this.frameW+this.currentFrame*this.frameW;
 				break;
 			case 2://From xml definition
-				if(data){
-					this.width=data[this.currentFrame].w;
-					this.height=data[this.currentFrame].h;
-					this.mcX=data[this.currentFrame].x;
-					this.mcY=data[this.currentFrame].y;
-					this.frameX=data[this.currentFrame].frameX;
-					this.frameY=data[this.currentFrame].frameY;
-					this.frameWidth=data[this.currentFrame].frameW;
-					this.frameHeight=data[this.currentFrame].frameH;
+				if(this.data){
+					var cFrame = this.data[this.currentFrame];
+					this.width=cFrame.w;
+					this.height=cFrame.h;
+					this.mcX=cFrame.x;
+					this.mcY=cFrame.y;
+					this.frameX=cFrame.frameX;
+					this.frameY=cFrame.frameY;
+					this.frameWidth=cFrame.frameW;
+					this.frameHeight=cFrame.frameH;
 					this.totalFrames=data.length;
 				}
 				break;
@@ -125,9 +128,14 @@ function MovieClip2D(img,data){
 	};
 	this.move = function(callback){
 		var that = this;
-		setInterval(function(){
-			callback.apply(that);
-		},10);
+		setInterval(that.movement,10);
 		
+	};
+	this.addEventListener = function(eventType,callback){
+		//TODO
+		var eventObj = new Event2D();
+		eventObj.eventType = eventType;
+		eventObj.callback = callback;
+		stage2d.addEventListener(eventObj);
 	};
 }

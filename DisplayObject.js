@@ -40,7 +40,7 @@ function Stage2D()
 		canvas.addEventListener("mousedown",this.stageMouseDown);
 		canvas.addEventListener("mousemove",this.stageMouseMove);
 		document.addEventListener("keydown",this.stageKeyDown);
-		document.addEventListener("keyDown",this.stageKeyDown);
+		//document.addEventListener("keyDown",this.stageKeyDown);
         setTimeout(paint,0);
     }
  
