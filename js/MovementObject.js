@@ -60,7 +60,7 @@ function MovementObject(img,data){
 			}
 		}
 		
-		console.log("dir: "+that.selectedDirection+" x: "+that.x+"  y: "+that.y);
+		//console.log("dir: "+that.selectedDirection+" x: "+that.x+"  y: "+that.y);
 		//TODO行走的时候，还需要根据当前坐标，以及地图信息判断往某个方向是否能走，如果不能走，则折返，或者停止，由ifReverse参数限制，如果ifReverse值为true则折返，否则到头停止。
 		switch(that.selectedDirection){
 			case DIRECTION_LEFT:

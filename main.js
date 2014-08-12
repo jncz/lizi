@@ -25,14 +25,23 @@ function init () {
     //启用场景逻辑
     stage2d.init();
     
-	initGround();
+	initGround().then(function(){
+		addActorClip();
+		addActorClip();
+		addActorClip();
+		addActorClip();
+		
+		addMainActorClip();
+	},function(e){
+		console.log(e);
+	});
 	
-	addActorClip();
-	addActorClip();
-	addActorClip();
-	addActorClip();
+	//addActorClip();
+	//addActorClip();
+	//addActorClip();
+	//addActorClip();
 	
-	addMainActorClip();//主角，用户可控制的对象
+	//addMainActorClip();//主角，用户可控制的对象
 	
 	//addRandomClip(10);
 	
@@ -105,8 +114,36 @@ function addXMLClip(){
 	
 }
 function initGround(){
-	var bg = new BackGround(imageLoaded[1]);
+	var p = jsonLoader.load("map.json");
+	p.then(function(obj,resolve,reject){
+		console.log(obj);
+		var unit = obj.unit;
+		var layers = obj.layers;
+		for(var i=0;i<layers.length;i++){
+			var layer = layers[i];
+			var points = layer.points;
+			for(var j=0;j<points.length;j++){
+				var point = points[j];
+				var imgPoint = point.imgPoint;
+				var rawPoint = point.point;
+				
+				var mc = new MovieClip2D(imageLoaded[1]);
+				mc.isPlay = 1;
+				mc.x = (rawPoint[0]+0.5)*unit;//为什么要偏移0.5呢，MovieClip中的paint方法，会将坐标点translate到矩形的中心点然后才drawImage
+				mc.y = (rawPoint[1]+0.5)*unit;
+				mc.frameW = unit;
+				mc.frameH = unit;
+				mc.frameHeadX = imgPoint[0];
+				mc.frameHeadY = imgPoint[1];
+				stage2d.addChild(mc);
+			}
+		}
+		resolve(1);
+	});
+	return p;
+	//var bg = new BackGround(imageLoaded[1]);
 	//stage2d.addChild(bg);
+	/**
 	for(var i=0;i<40;i++){
 		for(var j=0;j<40;j++){
 			var mc = new MovieClip2D(imageLoaded[1]);
@@ -120,6 +157,7 @@ function initGround(){
 			stage2d.addChild(mc);
 		}
 	}
+	*/
 }
 function addRandomClip(objSize){
 	for(var i=0;i<objSize;i++){
@@ -166,10 +204,12 @@ function addMainActorClip(){
 	
 	mc.moveDirection = [DIRECTION_LEFT,DIRECTION_RIGHT];
 	
-	mc.faceRight = [0,2];
-	mc.faceLeft = [0,1];
-	mc.faceUp = [0,3];
-	mc.faceDown = [0,0];
+	mc.frameHeadX = 3;
+	mc.frameHeadY = 0;
+	mc.faceLeft = [3,1];
+	mc.faceRight = [3,2];
+	mc.faceUp = [3,3];
+	mc.faceDown = [3,0];
 	
 	stage2d.addChild(mc);
 	

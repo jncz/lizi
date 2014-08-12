@@ -7,6 +7,7 @@ var xmlLoaded = undefined;
 var resLoader = {};
 var imgLoader = {};
 var xmlLoader = {};
+var jsonLoader = {};
 
 /**
 @param imgs 传入图片路径数组
@@ -15,7 +16,6 @@ var xmlLoader = {};
 resLoader.load = function(imgs,xmls){
 	var a = imgLoader.load(imgs);
 	var b = xmlLoader.load(xmls);
-	
 	return Promise.all([a,b]);
 };
 /**
@@ -105,6 +105,24 @@ xmlLoader.load = function(xmls){
 	
 };
 
+jsonLoader.load = function(path){
+	var p = new Promise(function(resolve,reject){
+		openURL("res/json/"+path,
+					function(http){
+						var jsonText = http.responseText;
+						var obj = JSON.parse(jsonText);
+						resolve(obj);
+					},
+					function(){
+						reject(-1);
+					},
+					{"Accecpt":"application/json","Content-Type":"application/json"},
+					"GET",
+					null,
+					true);
+	});
+	return p;
+};
 //<SubTexture name="fashi0000" x="206" y="340" width="47" height="93" frameX="-19" frameY="-5" frameWidth="70" frameHeight="103"/>
 function getSpiritFrame(item){
 	var frame = new QuadFrame();
