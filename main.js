@@ -45,21 +45,6 @@ function init () {
 	},function(e){
 		console.log(e);
 	});
-	
-	//addActorClip();
-	//addActorClip();
-	//addActorClip();
-	//addActorClip();
-	
-	//addMainActorClip();//主角，用户可控制的对象
-	
-	//addRandomClip(10);
-	
-	//addXMLClip();
-	
-	//addEvent();
-	
-	//initEvent();
 }
 
 function addEvent(){

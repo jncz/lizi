@@ -139,10 +139,21 @@ function MovementObject(img,data){
 		var startBlock = brange[0];
 		var endBlock   = brange[1];
 		
+		var startBound = this.getStopPointBound(startBlock);
+		var endBound = this.getStopPointBound(endBlock);
+		
 		if(startBlock[0] == 0){
-			return [0,endBlock[0]*unit];
+			return [0,endBlock[0]*unit+endBound[0]];
 		}
-		return [(startBlock[0]+1)*unit,endBlock[0]*unit];
+		return [(startBlock[0]+1)*unit-startBound[2],endBlock[0]*unit+endBound[0]];
+	};
+	/**
+	获取该点实际像素距离边的像素数
+	*/
+	this.getStopPointBound = function(point){
+		var img = this.getImgPointByMapPoint(point);
+		var m = this.getMetaByPoint(img);
+		return m?m.bound:[0,0,0,0];
 	};
 	/**
 	从给定的blocks数组中查找点(x,y)所能到达的左右边界块,所以返回值为长度为2的数组
