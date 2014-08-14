@@ -41,7 +41,7 @@ function MovementObject(img,data){
 				x0Step = x1Step = y0Step = y1Step = step;
 			}
 		}
-		var range = that.getXRange();
+		var range = that.getRange();
 		var x0Range = range[0];
 		var x1Range = range[1];
 		var y0Range = range[2];
@@ -104,10 +104,207 @@ function MovementObject(img,data){
 		}
 		return that.selectedDirection;
 	};
-	
-	this.getXRange = function(){
-		return [0,1024,0,768];
-		//TODO 生成某物体的X轴可移动距离范围，根据地图的信息生成。比如某个地方有树木，岩石等会影响通过性。
+	/**
+	返回值格式为：[x0,x1,y0,y1]分别表示在X轴上左右边界，Y轴的上下边界。值为像素
+	*/
+	this.getRange = function(){
+		var u = jsonmap.unit;
+		var xu = Math.floor(this.x/u);//xu 表示x unit在X轴上第几个单位
+		var yu = Math.floor(this.y/u);//同上
+		
+		
+		var xr = this.getXRange(xu,yu);//xr 表示x方向的range
+		var yr = this.getYRange(xu,yu);//同上
+		
+		var range = [xr[0],xr[1],yr[0],yr[1]];
+		return range;
+		//return [0,1024,0,768];
+		//TODO 生成某物体的可移动距离范围，根据地图的信息生成。比如某个地方有树木，岩石等会影响通过性。
+	};
+	/**
+	@param x 表示的是X方向上第几个单位，不是像素，比如第0个单位，那么0*unit才是像素
+	*/
+	this.getXRange = function(x,y){//TODO 考虑将已经计算出来的区域信息缓存起来，否则每次move的时候，都要遍历所有点坐标去计算，可能比较浪费性能
+		var l = this.getLeftBoundary(x,y);
+		var r = this.getRightBoundary(x,y);
+		
+		var blocks = this.getStopBlocksFromCache();//从cache中获取块信息
+		if(!blocks){//如果cache中没有，则开始查找
+			//获取X方向的行动区域
+			blocks = this.getBlockByY(y);//获取这一行上的所有块信息
+			blocks = this.getStopBlocks(blocks);//从这一行上的块信息中提起所有不可穿越的块 
+			//TODO 这里仅仅考虑了不可穿越，还有其他情况，甚至是目前未定义的情况，所以需要考虑引入其他变量或者回调方法来表示
+		}
+		var brange = this.getXBlockRange(blocks,x,y);
+		var startBlock = brange[0];
+		var endBlock   = brange[1];
+		
+		if(startBlock[0] == 0){
+			return [0,endBlock[0]*unit];
+		}
+		return [(startBlock[0]+1)*unit,endBlock[0]*unit];
+	};
+	/**
+	从给定的blocks数组中查找点(x,y)所能到达的左右边界块,所以返回值为长度为2的数组
+	*/
+	this.getXBlockRange = function(blocks,x,y){
+		blocks.sort(function(a,b){
+			if(a[0] > b[0]){
+				return true;
+			}
+			return false;
+		});
+		var checkPoint = [x,y];//待测点
+		blocks.push(checkPoint);
+		
+		blocks.sort(function(a,b){
+			if(a[0] > b[0]){
+				return true;
+			}
+			return false;
+		});//再次排序
+		
+		var idx = blocks.indexOf(checkPoint);
+		//idx左右的block就是左右边界
+		if(idx == 0){
+			return [[0,y],blocks[idx+1]];
+		}
+		return [blocks[idx-1],blocks[idx+1]];
+	};
+	this.getStopBlocksFromCache = function(){
+		//TODO
+	};
+	/**
+	@param y
+	根据y坐标获取整行的block
+	*/
+	this.getBlockByY = function(y){
+		var blocks = [];
+		var maxXUnit = Math.floor(jsonmap.width/jsonmap.unit);
+		for(var i=0;i<maxXUnit;i++){
+			blocks.push([i,y]);
+		}
+		return blocks;
+	};
+	this.getStopBlocks = function(blocks){
+		//地图默认都为不可通过，需要在地图上配置可通过才行
+		var stopBlocks = [];
+		for(var i=0;i<blocks.length;i++){
+			var block = blocks[i];
+			var img = this.getImgPointByMapPoint(block);
+			var m = this.getMetaByPoint(img);
+			if(m){
+				var a = m.attr;
+				if(!a.cross){
+					stopBlocks.push(block);
+					continue;
+				}
+			}
+		}
+		return stopBlocks;
+	};
+	//根据地图上的点获取该点图像在原始图片中的点坐标
+	this.getImgPointByMapPoint = function(point){
+		var layers = jsonmap.layers;
+		for(var i=0;i<layers.length;i++){
+			var layer = layers[i];
+			var points = layer.points;
+			for(var j=points.length-1;j>=0;j--){//最后被压入数组的点是最后绘制的，所以更接近表面，所以倒序检测
+				var p = points[j];
+				if(p.point[0] == point[0] && p.point[1] == point[1]){
+					return p.imgPoint;
+				}
+			}
+		}
+		return null;
+	};
+	this.getMetaByPoint = function(imgPoint){
+		var metas = jsonmap.meta;
+		for(var i=0;i<metas.length;i++){
+			var m = metas[i];
+			var p = m.point;
+
+			if(p[0] == imgPoint[0] && p[1] == imgPoint[1]){
+				var a = m.attr;
+				if(!a.cross){
+					return m;
+				}
+			}
+			
+		}
+	}
+	this.getYRange = function(y){
+		var u = this.getUpBoundary(y);
+		var d = this.getDownBoundary(y);
+		return [u,d];
+	};
+
+	/**
+	@param x 单位点
+	@param y
+	以unit为单位长度，将整个画布划分为若干个矩形块，x,y表示的是横向，纵向第几个块，并不是像素数
+	以x,y为参数，找到第一个阻止行进的块信息，然后返回
+	*/
+	this.findBlock = function(x,y){//检测是否可以通过
+		var layers = jsonmap.layers;
+		var imgPoint;
+		var layer = layers[layers.length-1];//只需要考虑最上面的一层的通过性就可以了
+		var points = layer.points;
+		for(var j=points.length-1;j>0;j--){//最后被压入数组的点是最后绘制的，所以更接近表明，所以倒叙检测
+			var point = points[j];
+			var p = point.point;
+			if(p[0] == x && p[1] == y){
+				imgPoint = point.imgPoint;
+				break;
+			}
+		}
+		if(!imgPoint){
+			return null;
+		}
+		var metas = jsonmap.meta;
+		for(var i=0;i<metas.length;i++){
+			var m = metas[i];
+			var p = m.point;
+
+			if(p[0] == imgPoint[0] && p[1] == imgPoint[1]){
+				var a = m.attr;
+				if(!a.cross){
+					return m;
+				}
+			}
+			
+		}
+		return null;
+	};
+	this.getLeftBoundary = function(x,y){
+		for(var i=x;i>=0;i--){
+			var b = this.findBlock(i,y);
+			if(b){
+				//找到第一个障碍物之后，停止，由于图片上的内容可能并不是充满整个矩形的，
+				//所以还需要对这个矩形区域的像素进行检查，看看是否还能再往前进多少像素
+				var bound = b.bound;//bound为长度为4的数组，分别代表了左，上，右，下距离矩形边的距离
+				return i*unit-bound[2];//向左行进，所以要减去矩形图块的右边距
+			}
+		}
+		return 0;//如果没障碍，则左边界为地图边界，为0
+	};
+	this.getRightBoundary = function(x,y){
+		var maxRightBoundary = Math.floor(jsonmap.width/jsonmap.unit);
+		for(var i=x;i<maxRightBoundary;i++){
+			var b = this.findBlock(i,y);
+			
+			if(b){
+				var bound = b.bound;
+				return i*unit+bound[0];//向右行进，要加上左边距
+			}
+		}
+		return jsonmap.width;//FIXME 如果没障碍，则右边界为地图边界，为地图最大单位
+	};
+	this.getUpBoundary = function(x,y){
+		return 0;//TODO
+	};
+	this.getDownBoundary = function(x,y){
+		return 0;//TODO
 	};
 	
 	this.directionReserve = function(){

@@ -5,6 +5,12 @@ var imageAddress = ["Actor1.png","map.png","donghua.png","eff.png"];
 
 var xmlAddress = ["spirit.xml","eff.xml"];
 
+var jsonmap;//地图
+var srcMap;//制作地图的原图名称
+var unit;//单位长度，每个单位的标准长度为多少像素。比如32，表示一个单位表示32个像素
+var mapW;//地图宽
+var mapH;//地图高
+
 this.loadResource = function(){
 	resLoader.load(imageAddress,xmlAddress).then(init);
 };
@@ -26,12 +32,16 @@ function init () {
     stage2d.init();
     
 	initGround().then(function(){
-		addActorClip();
-		addActorClip();
-		addActorClip();
-		addActorClip();
+		//addActorClip();
+		addTestActorClip(0,0);
 		
+		addTestActorClip(3,1);
+		
+		addTestActorClip(3,3);
+		addTestActorClip(2,4);
+		/**
 		addMainActorClip();
+		*/
 	},function(e){
 		console.log(e);
 	});
@@ -116,8 +126,11 @@ function addXMLClip(){
 function initGround(){
 	var p = jsonLoader.load("map.json");
 	p.then(function(obj,resolve,reject){
-		console.log(obj);
-		var unit = obj.unit;
+		jsonmap = obj;
+		unit = obj.unit;
+		mapW = obj.width;
+		mapH = obj.width;
+		srcMap = obj.srcMap;
 		var layers = obj.layers;
 		for(var i=0;i<layers.length;i++){
 			var layer = layers[i];
@@ -139,25 +152,10 @@ function initGround(){
 			}
 		}
 		resolve(1);
+	}).then(function(){
+		resolve(1);
 	});
 	return p;
-	//var bg = new BackGround(imageLoaded[1]);
-	//stage2d.addChild(bg);
-	/**
-	for(var i=0;i<40;i++){
-		for(var j=0;j<40;j++){
-			var mc = new MovieClip2D(imageLoaded[1]);
-			mc.isPlay = 1;
-			mc.x = j*32;
-			mc.y = i*32;
-			mc.frameW = 32;
-			mc.frameH = 32;
-			mc.mcX = 0;
-			mc.mcY = 0;
-			stage2d.addChild(mc);
-		}
-	}
-	*/
 }
 function addRandomClip(objSize){
 	for(var i=0;i<objSize;i++){
@@ -178,15 +176,30 @@ function addRandomClip(objSize){
 	}
 }
 
+function addTestActorClip(x,y){
+	var mc = createMovementObj();//new MovementObject(imageLoaded[0]);
+	mc.isPlay = 1;
+	mc.x = (x+0.5)*unit;//stageWidth*Math.random();
+	mc.y = (y+0.5)*unit;//stageHeight*Math.random();
+	mc.ifReverse = true,
+	mc.totalFrames = 3;
+	
+	mc.moveDirection = [DIRECTION_RIGHT];//[DIRECTION_LEFT,DIRECTION_RIGHT];
+	
+	stage2d.addChild(mc);
+	
+	mc.move();
+}
+
 function addActorClip(){
 	var mc = createMovementObj();//new MovementObject(imageLoaded[0]);
 	mc.isPlay = 1;
-	mc.x = stageWidth*Math.random();
-	mc.y = stageHeight*Math.random();
+	mc.x = 10*unit;//stageWidth*Math.random();
+	mc.y = 3*unit;//stageHeight*Math.random();
 	
 	mc.totalFrames = 3;
 	
-	mc.moveDirection = [DIRECTION_LEFT,DIRECTION_RIGHT];
+	mc.moveDirection = [DIRECTION_LEFT];//[DIRECTION_LEFT,DIRECTION_RIGHT];
 	
 	stage2d.addChild(mc);
 	

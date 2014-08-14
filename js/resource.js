@@ -107,7 +107,7 @@ xmlLoader.load = function(xmls){
 
 jsonLoader.load = function(path){
 	var p = new Promise(function(resolve,reject){
-		openURL("res/json/"+path,
+		openURL("res/json/"+path+"?d="+Date.now(),
 					function(http){
 						var jsonText = http.responseText;
 						var obj = JSON.parse(jsonText);
