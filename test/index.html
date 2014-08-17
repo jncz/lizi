@@ -7,19 +7,77 @@
   <link rel="stylesheet" href="/res/qunit/qunit.css">
   <script src="/res/qunit/qunit.js"></script>
   <script src="/liz/js/MovementObject.js"></script>
+  <script src="/res/js/pre.js"></script>
 	
 	<script name="Env prepare">
-		var unit = 32;
-		var maxXUnit = 4;
-		var maxYUnit = 5;
+		var map = mockMap();
+		jsonmap = map;//输出为全局变量，用来覆盖原代码中的变量
+		var unit = map.unit;
+		var maxXUnit = Math.floor(map.width/unit);
+		var maxYUnit = Math.floor(map.height/unit);
 	</script>
   <script>
-  QUnit.test("basics", function( assert ) {
+  QUnit.test("测试点[0,0]在地图[0,0,2,2]中是否可以获取到合适的停止坐标", function( assert ) {
     var mo = new MovementObject();
+	mo.x = 0;
+	mo.y = 0;
 	var rs = mo.getRangeRf();
-	assert.assertEquals(4,rs.length);
+	assert.ok(rs != null);
+	assert.ok(4 == rs.length);
+	assert.ok(rs[0] == 0 && rs[1] == 96);//检查X方向
+	//assert.ok(rs[2] == 0 && rs[3] == 96);//Y方向暂时还没实现 TODO
+  });
+  
+  QUnit.test("测试点[1,1]在地图[0,0,2,2]中是否可以获取到合适的停止坐标", function( assert ) {
+    var mo = new MovementObject();
+	mo.x = 1;
+	mo.y = 1;
+	var rs = mo.getRangeRf();
+	assert.ok(rs != null);
+	assert.ok(4 == rs.length);
+	assert.ok(rs[0] == 0 && rs[1] == 96);//检查X方向
+	//assert.ok(rs[2] == 0 && rs[3] == 96);//Y方向暂时还没实现 TODO
+  });
+  
+  QUnit.test("测试点[2,2]在地图[0,0,2,2]中是否可以获取到合适的停止坐标", function( assert ) {
+    var mo = new MovementObject();
+	mo.x = 2;
+	mo.y = 2;
+	var rs = mo.getRangeRf();
+	assert.ok(rs != null);
+	assert.ok(4 == rs.length);
+	assert.ok(rs[0] == 0 && rs[1] == 96);//检查X方向
+	//assert.ok(rs[2] == 0 && rs[3] == 96);//Y方向暂时还没实现 TODO
+  });
+  
+  QUnit.test("测试点[3,3]在地图[0,0,2,2]中是否超出边界之后，可以被自动限定在最大和最小之间", function( assert ) {
+    var mo = new MovementObject();
+	mo.x = 2;
+	mo.y = 2;
+	var rs = mo.getRangeRf();
+	assert.ok(rs != null);
+	assert.ok(4 == rs.length);
+	assert.ok(rs[0] == 0 && rs[1] == 96);//检查X方向
+	//assert.ok(rs[2] == 0 && rs[3] == 96);//Y方向暂时还没实现 TODO
+  });
+  
+  QUnit.test("测试输入的点是否能获取到正确的图片点", function( assert ) {
+    var mo = new MovementObject();
+	var p = [0,0];
+	var ip = mo.getImgPointByMapPoint(p);
+	assert.ok(ip[0]==0 && ip[1]==0);
 	
+	p = [1,0];
+	ip = mo.getImgPointByMapPoint(p);
+	assert.ok(ip[0]==0 && ip[1]==0);
 	
+	p = [2,0];
+	ip = mo.getImgPointByMapPoint(p);
+	assert.ok(ip[0]==0 && ip[1]==0);
+	
+	p = [3,0];
+	ip = mo.getImgPointByMapPoint(p);
+	assert.ok(ip == null);
   });
   
   QUnit.test("测试输入点是否为有效点", function( assert ) {

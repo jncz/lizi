@@ -157,9 +157,16 @@ function MovementObject(img,data){
 		var startBound = this.getStopPointBound(startBlock);
 		var endBound = this.getStopPointBound(endBlock);
 		
-		if(startBlock[0] == 0){
-			return [0,endBlock[0]*unit+endBound[0]];
+		
+		if(startBlock[0] == 0 || endBlock[0] == maxXUnit){
+			var dx = 0;
+			var dy = 0;
+			if(endBlock[0] == maxXUnit-1){
+				dy = endBlock[0]+1;
+			}
+			return [0,dy*unit+endBound[0]];
 		}
+		
 		return [(startBlock[0]+1)*unit-startBound[2],endBlock[0]*unit+endBound[0]];
 	};
 	/**
@@ -174,9 +181,8 @@ function MovementObject(img,data){
 	从给定的blocks数组中查找点(x,y)所能到达的左右边界块,所以返回值为长度为2的数组
 	*/
 	this.getXBlockRange = function(blocks,x,y){
-		var maxXUnit = Math.floor(jsonmap.width/jsonmap.unit);
 		if(!blocks || blocks.length == 0){
-			return [[0,y],[maxXUnit,y]];
+			return [[0,y],[maxXUnit-1,y]];
 		}
 		blocks.sort(function(a,b){
 			if(a[0] > b[0]){
@@ -258,9 +264,12 @@ function MovementObject(img,data){
 	检测输入点是否为有效点，有效点是指在整个地图之内的点，超出的算无效点
 	*/
 	this.isValidPoint = function(point){
+		if(!point){
+			return false;
+		}
 		var x = point[0];
 		var y = point[1];
-		if((x >=0 && x<=maxXUnit) && (y >= 0 && y <= maxYUnit)){
+		if((x >=0 && x <= maxXUnit) && (y >= 0 && y <= maxYUnit)){
 			return true;
 		}
 		return false;
@@ -277,8 +286,8 @@ function MovementObject(img,data){
 					return m;
 				}
 			}
-			
 		}
+		return null;
 	}
 	this.getYRange = function(y){
 		var u = this.getUpBoundary(y);
