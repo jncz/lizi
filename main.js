@@ -8,6 +8,8 @@ var xmlAddress = ["spirit.xml","eff.xml"];
 var jsonmap;//地图
 var srcMap;//制作地图的原图名称
 var unit;//单位长度，每个单位的标准长度为多少像素。比如32，表示一个单位表示32个像素
+var maxXUnit;//X方向最大单位个数：画布X长度/unit 即为maxXUnit
+var maxYUnit;//Y方向最大单位个数：画布Y长度/unit 即为maxYUnit
 var mapW;//地图宽
 var mapH;//地图高
 
@@ -31,17 +33,17 @@ function init () {
     //启用场景逻辑
     stage2d.init();
     
-	initGround().then(function(){
+	initMap().then(function(){
 		//addActorClip();
-		addTestActorClip(0,0);
+		//addTestActorClip(0,0);
 		
-		addTestActorClip(3,1);
+		//addTestActorClip(3,1);
 		
-		addTestActorClip(3,3);
-		addTestActorClip(2,4);
-		/**
+		//addTestActorClip(3,3);
+		//addTestActorClip(2,4);
+		/***/
 		addMainActorClip();
-		*/
+		
 	},function(e){
 		console.log(e);
 	});
@@ -108,11 +110,13 @@ function addXMLClip(){
     stage2d.addChild(mc5);
 	
 }
-function initGround(){
+function initMap(){
 	var p = jsonLoader.load("map.json");
 	p.then(function(obj,resolve,reject){
 		jsonmap = obj;
 		unit = obj.unit;
+		maxXUnit = Math.floor(jsonmap.width/unit);
+		maxYUnit = Math.floor(jsonmap.height/unit);
 		mapW = obj.width;
 		mapH = obj.width;
 		srcMap = obj.srcMap;

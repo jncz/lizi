@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Game test</title>
+ 
+  <link rel="stylesheet" href="/res/qunit/qunit.css">
+  <script src="/res/qunit/qunit.js"></script>
+  <script src="/liz/js/MovementObject.js"></script>
+	
+	<script name="Env prepare">
+		var unit = 32;
+		var maxXUnit = 4;
+		var maxYUnit = 5;
+	</script>
+  <script>
+  QUnit.test("basics", function( assert ) {
+    var mo = new MovementObject();
+	var rs = mo.getRangeRf();
+	assert.assertEquals(4,rs.length);
+	
+	
+  });
+  
+  QUnit.test("测试输入点是否为有效点", function( assert ) {
+	var mo = new MovementObject();
+	var p = [0,0];
+	var valid = mo.isValidPoint(p);
+	assert.ok(valid);
+	
+	p = [-1,0];
+	valid = mo.isValidPoint(p);
+	assert.ok(!valid);
+	
+	p = [0,-1];
+	valid = mo.isValidPoint(p);
+	assert.ok(!valid);
+	
+	p = [1,1];
+	valid = mo.isValidPoint(p);
+	assert.ok(valid);
+	
+	p = [maxXUnit,1];
+	valid = mo.isValidPoint(p);
+	assert.ok(valid);
+	
+	p = [2,maxYUnit];
+	valid = mo.isValidPoint(p);
+	assert.ok(valid);
+	
+	p = [maxXUnit,maxYUnit];
+	valid = mo.isValidPoint(p);
+	assert.ok(valid);
+	
+	p = [maxXUnit+1,maxYUnit];
+	valid = mo.isValidPoint(p);
+	assert.ok(!valid);
+	
+	p = [maxXUnit,maxYUnit+1];
+	valid = mo.isValidPoint(p);
+	assert.ok(!valid);
+	
+	p = [maxXUnit+1,maxYUnit+1];
+	valid = mo.isValidPoint(p);
+	assert.ok(!valid);
+  });
+  </script>
+</head>
+<body>
+ 
+<div id="qunit"></div>
+ 
+</body>
+</html>

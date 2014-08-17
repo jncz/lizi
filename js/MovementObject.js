@@ -48,8 +48,8 @@ function MovementObject(img,data){
 		var y1Range = range[3];
 		
 		//因为x,y的坐标是物体中心点的坐标，所以需要通过物体的宽高的1/2进行修正
-		if((that.selectedDirection == DIRECTION_LEFT && (that.x-that.frameW/2) <= x0Range)
-			|| (that.selectedDirection == DIRECTION_RIGHT && (that.x+that.frameW/2) >= x1Range)
+		if((that.selectedDirection == DIRECTION_LEFT && (that.x) <= x0Range)
+			|| (that.selectedDirection == DIRECTION_RIGHT && (that.x) >= x1Range)
 			|| (that.selectedDirection == DIRECTION_UP && (that.y-that.frameH/2) <= y0Range)
 			|| (that.selectedDirection == DIRECTION_DOWN && (that.y+that.frameH/2) >= y1Range)
 			){
@@ -121,12 +121,27 @@ function MovementObject(img,data){
 		//return [0,1024,0,768];
 		//TODO 生成某物体的可移动距离范围，根据地图的信息生成。比如某个地方有树木，岩石等会影响通过性。
 	};
+	
+	this.getRangeRf = function(){
+		var u = unit;
+		var xu = Math.floor(this.x/u);//xu 表示x unit在X轴上第几个单位
+		var yu = Math.floor(this.y/u);//同上
+		
+		
+		var xr = this.getXRange(xu,yu);//xr 表示x方向的range
+		var yr = this.getYRange(xu,yu);//同上
+		
+		var range = [xr[0],xr[1],yr[0],yr[1]];
+		return range;
+		//return [0,1024,0,768];
+		//TODO 生成某物体的可移动距离范围，根据地图的信息生成。比如某个地方有树木，岩石等会影响通过性。
+	};
 	/**
 	@param x 表示的是X方向上第几个单位，不是像素，比如第0个单位，那么0*unit才是像素
 	*/
 	this.getXRange = function(x,y){//TODO 考虑将已经计算出来的区域信息缓存起来，否则每次move的时候，都要遍历所有点坐标去计算，可能比较浪费性能
-		var l = this.getLeftBoundary(x,y);
-		var r = this.getRightBoundary(x,y);
+		//var l = this.getLeftBoundary(x,y);
+		//var r = this.getRightBoundary(x,y);
 		
 		var blocks = this.getStopBlocksFromCache();//从cache中获取块信息
 		if(!blocks){//如果cache中没有，则开始查找
@@ -159,6 +174,10 @@ function MovementObject(img,data){
 	从给定的blocks数组中查找点(x,y)所能到达的左右边界块,所以返回值为长度为2的数组
 	*/
 	this.getXBlockRange = function(blocks,x,y){
+		var maxXUnit = Math.floor(jsonmap.width/jsonmap.unit);
+		if(!blocks || blocks.length == 0){
+			return [[0,y],[maxXUnit,y]];
+		}
 		blocks.sort(function(a,b){
 			if(a[0] > b[0]){
 				return true;
@@ -180,6 +199,9 @@ function MovementObject(img,data){
 		if(idx == 0){
 			return [[0,y],blocks[idx+1]];
 		}
+		if(idx == blocks.length-1){
+			[blocks[idx-1],blocks[idx]];
+		}
 		return [blocks[idx-1],blocks[idx+1]];
 	};
 	this.getStopBlocksFromCache = function(){
@@ -191,7 +213,6 @@ function MovementObject(img,data){
 	*/
 	this.getBlockByY = function(y){
 		var blocks = [];
-		var maxXUnit = Math.floor(jsonmap.width/jsonmap.unit);
 		for(var i=0;i<maxXUnit;i++){
 			blocks.push([i,y]);
 		}
@@ -216,6 +237,10 @@ function MovementObject(img,data){
 	};
 	//根据地图上的点获取该点图像在原始图片中的点坐标
 	this.getImgPointByMapPoint = function(point){
+		var valid = this.isValidPoint(point);
+		if(!valid){
+			return null;
+		}
 		var layers = jsonmap.layers;
 		for(var i=0;i<layers.length;i++){
 			var layer = layers[i];
@@ -228,6 +253,17 @@ function MovementObject(img,data){
 			}
 		}
 		return null;
+	};
+	/**
+	检测输入点是否为有效点，有效点是指在整个地图之内的点，超出的算无效点
+	*/
+	this.isValidPoint = function(point){
+		var x = point[0];
+		var y = point[1];
+		if((x >=0 && x<=maxXUnit) && (y >= 0 && y <= maxYUnit)){
+			return true;
+		}
+		return false;
 	};
 	this.getMetaByPoint = function(imgPoint){
 		var metas = jsonmap.meta;
