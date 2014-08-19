@@ -158,16 +158,16 @@ function MovementObject(img,data){
 		var endBound = this.getStopPointBound(endBlock);
 		
 		
-		if(startBlock[0] == 0 || endBlock[0] == maxXUnit){
-			var dx = 0;
-			var dy = 0;
-			if(endBlock[0] == maxXUnit-1){
-				dy = endBlock[0]+1;
-			}
-			return [0,dy*unit+endBound[0]];
+		var dx0 = (startBlock[0]+1)*unit-startBound[2];
+		var dx1 = endBlock[0]*unit+endBound[0];
+		if(startBlock[0] == 0){//如果起始点为第一个点，那么起始x坐标为0
+			dx0 = unit-startBound[2];
+		}
+		if(endBlock[0] == maxXUnit-1){//如果点为最后一个点，那么X坐标为最大单位-1之后乘以unit再减去最后一个点左侧边无效像素数
+			dx1 = (maxXUnit-1)*unit+endBound[0];
 		}
 		
-		return [(startBlock[0]+1)*unit-startBound[2],endBlock[0]*unit+endBound[0]];
+		return [dx0,dx1];
 	};
 	/**
 	获取该点实际像素距离边的像素数
@@ -281,10 +281,7 @@ function MovementObject(img,data){
 			var p = m.point;
 
 			if(p[0] == imgPoint[0] && p[1] == imgPoint[1]){
-				var a = m.attr;
-				if(!a.cross){
-					return m;
-				}
+				return m;
 			}
 		}
 		return null;

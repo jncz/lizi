@@ -17,18 +17,19 @@
 		var maxYUnit = Math.floor(map.height/unit);
 	</script>
   <script>
-  QUnit.test("测试点[0,0]在地图[0,0,2,2]中是否可以获取到合适的停止坐标", function( assert ) {
+  QUnit.test("测试点[0,0]在无停止点地图[0,0,2,2]中是否可以获取到合适的停止坐标", function( assert ) {
     var mo = new MovementObject();
 	mo.x = 0;
 	mo.y = 0;
 	var rs = mo.getRangeRf();
 	assert.ok(rs != null);
 	assert.ok(4 == rs.length);
+	
 	assert.ok(rs[0] == 0 && rs[1] == 96);//检查X方向
 	//assert.ok(rs[2] == 0 && rs[3] == 96);//Y方向暂时还没实现 TODO
   });
   
-  QUnit.test("测试点[1,1]在地图[0,0,2,2]中是否可以获取到合适的停止坐标", function( assert ) {
+  QUnit.test("测试点[1,1]在无停止点地图[0,0,2,2]中是否可以获取到合适的停止坐标", function( assert ) {
     var mo = new MovementObject();
 	mo.x = 1;
 	mo.y = 1;
@@ -39,7 +40,7 @@
 	//assert.ok(rs[2] == 0 && rs[3] == 96);//Y方向暂时还没实现 TODO
   });
   
-  QUnit.test("测试点[2,2]在地图[0,0,2,2]中是否可以获取到合适的停止坐标", function( assert ) {
+  QUnit.test("测试点[2,2]在无停止点地图[0,0,2,2]中是否可以获取到合适的停止坐标", function( assert ) {
     var mo = new MovementObject();
 	mo.x = 2;
 	mo.y = 2;
@@ -50,7 +51,7 @@
 	//assert.ok(rs[2] == 0 && rs[3] == 96);//Y方向暂时还没实现 TODO
   });
   
-  QUnit.test("测试点[3,3]在地图[0,0,2,2]中是否超出边界之后，可以被自动限定在最大和最小之间", function( assert ) {
+  QUnit.test("测试点[3,3]在无停止点地图[0,0,2,2]中是否超出边界之后，可以被自动限定在最大和最小之间", function( assert ) {
     var mo = new MovementObject();
 	mo.x = 2;
 	mo.y = 2;
@@ -59,6 +60,23 @@
 	assert.ok(4 == rs.length);
 	assert.ok(rs[0] == 0 && rs[1] == 96);//检查X方向
 	//assert.ok(rs[2] == 0 && rs[3] == 96);//Y方向暂时还没实现 TODO
+  });
+  
+  QUnit.test("测试点[0,0]在有一个停止点[0,1]地图[0,0,2,2]中是否可以获取到合适的停止坐标", function( assert ) {
+    var mo = new MovementObject();
+	mo.x = 0;
+	mo.y = 0;
+	
+	map.layers[0].points[1].imgPoint = [1,1];//在这里把原始的地图信息重新赋值，赋予一个停止点，鉴于这是一个3*3的地图，那么points[1]表示的就是第一行第二个点。由于地图信息共享，测试完毕之后，要将地图信息复位
+	
+	var rs = mo.getRangeRf();
+	assert.ok(rs != null);
+	assert.ok(4 == rs.length);
+	console.log(rs);
+	assert.ok(rs[0] == 0 && rs[1] == 42);//检查X方向,地图3*3，停止点在第一行第二个点，当前人物在[0,0]点，那么人物可移动范围为0-31像素之间
+	//assert.ok(rs[2] == 0 && rs[3] == 96);//Y方向暂时还没实现 TODO
+	
+	map.layers[0].points[1].imgPoint = [0,0];//复位
   });
   
   QUnit.test("测试输入的点是否能获取到正确的图片点", function( assert ) {
