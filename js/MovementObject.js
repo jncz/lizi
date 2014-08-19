@@ -206,7 +206,7 @@ function MovementObject(img,data){
 			return [[0,y],blocks[idx+1]];
 		}
 		if(idx == blocks.length-1){
-			[blocks[idx-1],blocks[idx]];
+			return [blocks[idx-1],blocks[idx]];
 		}
 		return [blocks[idx-1],blocks[idx+1]];
 	};
