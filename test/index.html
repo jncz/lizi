@@ -15,8 +15,8 @@
 		var unit;
 		var maxXUnit;
 		var maxYUnit;
-		function setup(x,y){
-			map = createMockMap(x,y);
+		function setup(x,y,z){
+			map = createMockMap(x,y,z);
 			jsonmap = map;//输出为全局变量，用来覆盖原代码中的变量
 			unit = map.unit;
 			maxXUnit = Math.floor(map.width/unit);
@@ -32,7 +32,7 @@
 	var rs = mo.getRangeRf();
 	assert.ok(rs != null);
 	assert.ok(4 == rs.length);
-	
+	console.log(rs);
 	assert.ok(rs[0] == 0 && rs[1] == 96);//检查X方向
 	//assert.ok(rs[2] == 0 && rs[3] == 96);//Y方向暂时还没实现 TODO
   });
@@ -86,8 +86,6 @@
 	assert.ok(4 == rs.length);
 	assert.ok(rs[0] == 0 && rs[1] == 42);//检查X方向,地图3*3，停止点在第一行第二个点，当前人物在[0,0]点，那么人物可移动范围为0-31像素之间
 	//assert.ok(rs[2] == 0 && rs[3] == 96);//Y方向暂时还没实现 TODO
-	
-	map.layers[0].points[1].imgPoint = [0,0];//复位
   });
   
   QUnit.test("测试点[2,0]在有一个停止点[1,0]地图[0,0,2,2]中是否可以获取到合适的停止坐标", function( assert ) {
@@ -103,8 +101,6 @@
 	assert.ok(4 == rs.length);
 	assert.ok(rs[0] == 54 && rs[1] == 96);//检查X方向,地图3*3，停止点在第一行第二个点，当前人物在[2,0]点，那么人物可移动范围为0-31像素之间
 	//assert.ok(rs[2] == 0 && rs[3] == 96);//Y方向暂时还没实现 TODO
-	
-	map.layers[0].points[1].imgPoint = [0,0];//复位
   });
   
   QUnit.test("测试点[0,0]在有两个停止点[0,0],[5,0]地图[0,0,5,5]中是否可以获取到合适的停止坐标", function( assert ) {
@@ -121,9 +117,6 @@
 	assert.ok(4 == rs.length);
 	assert.ok(rs[0] == 22 && rs[1] == (unit*5+10));//检查X方向,地图6*6，停止点在第一行第二个点，当前人物在[2,0]点，那么人物可移动范围为0-31像素之间
 	//assert.ok(rs[2] == 0 && rs[3] == 96);//Y方向暂时还没实现 TODO
-	
-	map.layers[0].points[1].imgPoint = [0,0];//复位
-	map.layers[0].points[5].imgPoint = [0,0];//复位
   });
   
   QUnit.test("测试点[1,0]在有两个停止点[0,0],[5,0]地图[0,0,5,5]中是否可以获取到合适的停止坐标", function( assert ) {
@@ -140,9 +133,6 @@
 	assert.ok(4 == rs.length);
 	assert.ok(rs[0] == 22 && rs[1] == (unit*5+10));//检查X方向,地图6*6，停止点在第一行第二个点，当前人物在[2,0]点，那么人物可移动范围为0-31像素之间
 	//assert.ok(rs[2] == 0 && rs[3] == 96);//Y方向暂时还没实现 TODO
-	
-	map.layers[0].points[1].imgPoint = [0,0];//复位
-	map.layers[0].points[5].imgPoint = [0,0];//复位
   });
   
   QUnit.test("测试点[3,0]在有两个停止点[1,0],[5,0]地图[0,0,5,5]中是否可以获取到合适的停止坐标", function( assert ) {
@@ -157,12 +147,27 @@
 	var rs = mo.getRangeRf();
 	assert.ok(rs != null);
 	assert.ok(4 == rs.length);
+	assert.ok(rs[0] == 54 && rs[1] == (unit*5+10));//检查X方向,地图6*6，停止点在第一行第二个点，当前人物在[2,0]点，那么人物可移动范围为0-31像素之间
+	//assert.ok(rs[2] == 0 && rs[3] == 96);//Y方向暂时还没实现 TODO
+  });
+  
+  QUnit.test("测试点[3,0]在有两个停止点[1,0],[5,0],且两个停止点分别在两个图层中的地图[0,0,5,5]中是否可以获取到合适的停止坐标", function( assert ) {
+	setup(6,6,2);
+    var mo = new MovementObject();
+	mo.x = 3*unit;
+	mo.y = 0;
+	
+	map.layers[0].points[1].imgPoint = [1,1];//在这里把原始的地图信息重新赋值，赋予一个停止点，鉴于这是一个6*6的地图，那么points[1]表示的就是第一行第二个点。由于地图信息共享，测试完毕之后，要将地图信息复位
+	map.layers[1].points[5].imgPoint = [1,1];//在这里把原始的地图信息重新赋值，赋予一个停止点，鉴于这是一个6*6的地图，那么points[1]表示的就是第一行第二个点。由于地图信息共享，测试完毕之后，要将地图信息复位
+	
+	console.log(map.layers[0].points[1].imgPoint);
+	console.log(map);
+	var rs = mo.getRangeRf();
+	assert.ok(rs != null);
+	assert.ok(4 == rs.length);
 	console.log(rs);
 	assert.ok(rs[0] == 54 && rs[1] == (unit*5+10));//检查X方向,地图6*6，停止点在第一行第二个点，当前人物在[2,0]点，那么人物可移动范围为0-31像素之间
 	//assert.ok(rs[2] == 0 && rs[3] == 96);//Y方向暂时还没实现 TODO
-	
-	map.layers[0].points[1].imgPoint = [0,0];//复位
-	map.layers[0].points[5].imgPoint = [0,0];//复位
   });
   
   QUnit.test("测试输入的点是否能获取到正确的图片点", function( assert ) {

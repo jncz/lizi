@@ -173,9 +173,18 @@ function MovementObject(img,data){
 	获取该点实际像素距离边的像素数
 	*/
 	this.getStopPointBound = function(point){
-		var img = this.getImgPointByMapPoint(point);
-		var m = this.getMetaByPoint(img);
-		return m?m.bound:[0,0,0,0];
+		var imgs = this.getImgPointsByMapPoint(point);
+		for(var i = 0;i<imgs.length;i++){
+			var img = imgs[i];
+			var m = this.getMetaByPoint(img);
+			if(m){
+				var a = m.attr;
+				if(!a.cross){
+					return m.bound;
+				}
+			}
+		}
+		return [unit,unit,unit,unit];
 	};
 	/**
 	从给定的blocks数组中查找点(x,y)所能到达的左右边界块,所以返回值为长度为2的数组
@@ -229,36 +238,50 @@ function MovementObject(img,data){
 		var stopBlocks = [];
 		for(var i=0;i<blocks.length;i++){
 			var block = blocks[i];
-			var img = this.getImgPointByMapPoint(block);
-			var m = this.getMetaByPoint(img);
-			if(m){
-				var a = m.attr;
-				if(!a.cross){
-					stopBlocks.push(block);
-					continue;
+			var imgs = this.getImgPointsByMapPoint(block);
+			for(var j=0;j<imgs.length;j++){
+				var img = imgs[j];
+				var m = this.getMetaByPoint(img);
+				if(m){
+					var a = m.attr;
+					if(!a.cross){
+						stopBlocks.push(block);
+						continue;
+					}
 				}
 			}
+			
 		}
 		return stopBlocks;
 	};
 	//根据地图上的点获取该点图像在原始图片中的点坐标
 	this.getImgPointByMapPoint = function(point){
+		var imgPoints = this.getImgPointsByMapPoint(point);
+		if(!imgPoints || imgPoints.length == 0){
+			return null;
+		}else{
+			return imgPoints[0];//第一个为最表层的点
+		}
+	};
+	//根据地图上的点获取该点图像在原始图片中的点坐标集
+	this.getImgPointsByMapPoint = function(point){
 		var valid = this.isValidPoint(point);
 		if(!valid){
 			return null;
 		}
+		var imgPoints = [];
 		var layers = jsonmap.layers;
-		for(var i=0;i<layers.length;i++){
+		for(var i=layers.length-1;i>=0;i--){//从最上层开始取
 			var layer = layers[i];
 			var points = layer.points;
 			for(var j=points.length-1;j>=0;j--){//最后被压入数组的点是最后绘制的，所以更接近表面，所以倒序检测
 				var p = points[j];
 				if(p.point[0] == point[0] && p.point[1] == point[1]){
-					return p.imgPoint;
+					imgPoints.push(p.imgPoint);
 				}
 			}
 		}
-		return null;
+		return imgPoints;
 	};
 	/**
 	检测输入点是否为有效点，有效点是指在整个地图之内的点，超出的算无效点
