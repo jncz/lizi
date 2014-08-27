@@ -4,13 +4,79 @@
 		<title>Game 1</title>
 		<script type="text/javascript" src="engine/js/Constants.js"></script>
 		<script type="text/javascript" src="engine/js/util.js"></script>
-		<script type="text/javascript" src="engine/js/MovieClip.js"></script>
-		<script type="text/javascript" src="engine/js/MovementObject.js"></script>
-		<script type="text/javascript" src="engine/js/DisplayObject.js"></script>
-		<script type="text/javascript" src="engine/js/event.js"></script>
-		<script type="text/javascript" src="engine/js/resource.js"></script>
-		<script type="text/javascript" src="engine/js/BackGround.js"></script>
-		<script type="text/javascript" src="main.js"></script>
+		<script type="text/javascript" src="engine/js/globalScope.js"></script>
+		<script type="text/javascript" src="engine/js/amd/requirejs/require.js"></script>
+		<script>
+			require.config({ 
+				baseUrl: "./", 
+				paths: { 
+					"engine": "engine/js"
+				}, 
+				urlArgs: "bust=" + Date.now(),
+				waitSeconds: 2 
+			 }); 
+			 require( ["./booter.js","engine/MovementObject","engine/MovieClip"], 
+				function(starter,MovementObject,MovieClip2D) {
+					var imgs = ["Actor1.png","map.png","donghua.png","eff.png"];
+					var json = [];
+					starter.regImgRes(imgs);
+					starter.regJSONRes(json);
+					starter.regCustomerBoot(function(){
+						//It will be called at the end of the engine boot
+						console.log("cust boot");
+						var fashi = g.LOADED_XMLS[0];
+						var mc = new MovieClip2D(g.LOADED_IMGS[2],fashi.quadFrameList);
+						mc.isPlay=2;
+						mc.x=300;
+						mc.y=300;
+						stage2d.addChild(mc);
+						
+						///////////////////////////
+						
+						function addMainActorClip(){
+							var mc = createMovementObj();//new MovementObject(imageLoaded[0]);
+							mc.isPlay = 1;
+							mc.x = 400;
+							mc.y = 300;
+							
+							mc.totalFrames = 3;
+							mc.ifReverse = false;
+							
+							mc.moveDirection = [DIRECTION_LEFT,DIRECTION_RIGHT];
+							
+							mc.frameHeadX = 3;
+							mc.frameHeadY = 0;
+							mc.faceLeft = [3,1];
+							mc.faceRight = [3,2];
+							mc.faceUp = [3,3];
+							mc.faceDown = [3,0];
+							
+							stage2d.addChild(mc);
+							
+							mc.addEventListener("keyDown",function(e){
+								var step = 2;
+								mc.movement(getDirection(e),step);
+							});
+							
+							regAsMainActor(mc);
+						}
+
+						function createMovementObj(){
+							var obj = new MovementObject(g.LOADED_IMGS[0]);
+							extend(obj,new MovieClip2D());
+							return obj;
+						}
+
+						function regAsMainActor(obj){
+							actor = obj;
+						}
+						
+						addMainActorClip();
+					});
+					starter.boot();
+				} 
+			  ); 
+		</script>
 	</head>
 	<style>
 		html,body{
