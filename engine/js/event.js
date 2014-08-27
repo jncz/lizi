@@ -1,11 +1,8 @@
-function initEvent(){
-	document.body.addEventListener("click",function(e){
-		console.log("clicked");
-		fireLizi(e.x,e.y);
-	});
-}
-
-function Event2D(){
-	this.eventType = "";
-	this.callback = function(element){}
-}
+define(function(){
+	var Event2D = function(){
+		this.eventType = "";
+		this.callback = function(element){}
+	};
+	
+	return Event2D;
+});
