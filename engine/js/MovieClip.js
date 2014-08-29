@@ -1,3 +1,4 @@
+"use strict"
 define(["engine/event"],function(Event2D){
 	var MovieClip2D = function(img,data){
 		this.img = img;

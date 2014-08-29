@@ -1,3 +1,4 @@
+"use strict"
 define(["engine/ajax","engine/Promise"],function(ajax,Promise){
 	
 	return {

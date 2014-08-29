@@ -1,3 +1,4 @@
+"use strict"
 define(["engine/Promise"],function(Promise){
 	return {
 		load:function(items,callback){

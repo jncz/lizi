@@ -1,3 +1,4 @@
+"use strict"
 define(function(){
 	var Event2D = function(){
 		this.eventType = "";

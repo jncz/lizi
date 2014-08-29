@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Game test Promise</title>
+ 
+  <link rel="stylesheet" href="/res/qunit/qunit.css">
+  <script type="text/javascript" src="../engine/js/amd/requirejs/require.js"></script>
+  <script type="text/javascript" src="/res/qunit/qunit.js"></script>
+  
+  <script>
+	QUnit.config.autostart = true;
+	require.config({ 
+				baseUrl: "../", 
+				paths: { 
+					"engine": "engine/js"
+				}, 
+				urlArgs: "bust=" + Date.now(),
+				waitSeconds: 2 
+			 }); 
+  </script>
+  <script>
+  QUnit.module("测试Promise组件");
+  QUnit.asyncTest("Promise.resolve", function( assert ) {
+	expect(1);
+	require(["engine/Promise"],function(Promise){
+		//var p = new Promise();
+		var r = Promise.resolve();
+		assert.ok(r != null);
+		QUnit.start();
+	});
+  });
+  
+  QUnit.asyncTest("Promise.then", function( assert ) {
+	expect(3);
+	require(["engine/Promise"],function(Promise){
+		var p = new Promise(function(resolve,reject){
+			resolve(1);
+		});  
+		assert.ok(p != null);
+		p.then(function(d){
+			return (new Promise(function(resolve,reject){
+				assert.equal(1,d,"值应该为上一步的Promise resolve操作传入的值，这里为1");
+				resolve(2);
+			}));
+		}).then(function(d){
+			return (new Promise(function(resolve,reject){
+				assert.equal(2,d,"值应该为上一步的Promise resolve操作传入的值，这里为2");
+				resolve(3);
+			}));
+		});
+		QUnit.start();
+	});
+  });
+  
+  QUnit.asyncTest("Promise.all", function( assert ) {
+	expect(1);
+	require(["engine/Promise"],function(Promise){
+		var p1 = new Promise(function(resolve,reject){
+			resolve(1);
+		});
+		var p2 = new Promise(function(resolve,reject){
+			resolve(1);
+		});
+		var p3 = new Promise(function(resolve,reject){
+			resolve(1);
+		});
+		
+		Promise.all([p1,p2,p3]).then(function(){
+			assert.ok(true);
+		});
+		QUnit.start();
+	});
+  });
+  </script>
+</head>
+<body>
+ 
+<div id="qunit"></div>
+ 
+</body>
+</html>

@@ -1,4 +1,5 @@
-define(function(){
+"use strict"
+define(["engine/Constants"],function(C){
 	function changeFace(targetObj,face){
 		targetObj.frameHeadX = face[0];
 		targetObj.frameHeadY = face[1];
@@ -25,10 +26,10 @@ define(function(){
 			//默认的行走行为为随机朝向的行走
 			that.selectedDirection = direction || that.chooseDirection();
 			
-			var x0Step = MOVE_STEP_X;
-			var x1Step = MOVE_STEP_X;
-			var y0Step = MOVE_STEP_Y;
-			var y1Step = MOVE_STEP_Y;
+			var x0Step = C.MOVE_STEP_X;
+			var x1Step = C.MOVE_STEP_X;
+			var y0Step = C.MOVE_STEP_Y;
+			var y1Step = C.MOVE_STEP_Y;
 			if(step){
 				if(step.length){
 					if(step.length == 2){
@@ -53,10 +54,10 @@ define(function(){
 			var y1Range = range[3];
 			
 			//因为x,y的坐标是物体中心点的坐标，所以需要通过物体的宽高的1/2进行修正
-			if((that.selectedDirection == DIRECTION_LEFT && (that.x) <= x0Range)
-				|| (that.selectedDirection == DIRECTION_RIGHT && (that.x) >= x1Range)
-				|| (that.selectedDirection == DIRECTION_UP && (that.y-that.frameH/2) <= y0Range)
-				|| (that.selectedDirection == DIRECTION_DOWN && (that.y+that.frameH/2) >= y1Range)
+			if((that.selectedDirection == C.DIRECTION_LEFT && (that.x) <= x0Range)
+				|| (that.selectedDirection == C.DIRECTION_RIGHT && (that.x) >= x1Range)
+				|| (that.selectedDirection == C.DIRECTION_UP && (that.y-that.frameH/2) <= y0Range)
+				|| (that.selectedDirection == C.DIRECTION_DOWN && (that.y+that.frameH/2) >= y1Range)
 				){
 				if(that.ifReverse){
 					that.directionReserve();
@@ -68,19 +69,19 @@ define(function(){
 			//console.log("dir: "+that.selectedDirection+" x: "+that.x+"  y: "+that.y);
 			//TODO行走的时候，还需要根据当前坐标，以及地图信息判断往某个方向是否能走，如果不能走，则折返，或者停止，由ifReverse参数限制，如果ifReverse值为true则折返，否则到头停止。
 			switch(that.selectedDirection){
-				case DIRECTION_LEFT:
+				case C.DIRECTION_LEFT:
 					changeFace(that,that.faceLeft);
 					that.x -= x0Step;
 					break;
-				case DIRECTION_RIGHT:
+				case C.DIRECTION_RIGHT:
 					changeFace(that,that.faceRight);
 					that.x += x1Step;
 					break;
-				case DIRECTION_UP:
+				case C.DIRECTION_UP:
 					changeFace(that,that.faceUp);
 					that.y -= y0Step;
 					break;
-				case DIRECTION_DOWN:
+				case C.DIRECTION_DOWN:
 					changeFace(that,that.faceDown);
 					that.y += y1Step;
 					break;
@@ -88,21 +89,21 @@ define(function(){
 		};
 		//limitDirections 方向数组，用来限制当前对象只能向某几个方向移动
 		this.chooseDirection = function(){
-			var limitDirections = that.moveDirection || [DIRECTION_LEFT];
+			var limitDirections = that.moveDirection || [C.DIRECTION_LEFT];
 			var direction;
 			var r = Math.random();
 			if(r>=0 && r<0.25){
-				if(limitDirections.indexOf(DIRECTION_LEFT) != -1)
-					direction = DIRECTION_LEFT;
+				if(limitDirections.indexOf(C.DIRECTION_LEFT) != -1)
+					direction = C.DIRECTION_LEFT;
 			}else if(r >= 0.25 && r < 0.5){
-				if(limitDirections.indexOf(DIRECTION_RIGHT) != -1)
-					direction = DIRECTION_RIGHT;
+				if(limitDirections.indexOf(C.DIRECTION_RIGHT) != -1)
+					direction = C.DIRECTION_RIGHT;
 			}else if(r >= 0.5 && r < 0.75){
-				if(limitDirections.indexOf(DIRECTION_UP) != -1)
-					direction = DIRECTION_UP;
+				if(limitDirections.indexOf(C.DIRECTION_UP) != -1)
+					direction = C.DIRECTION_UP;
 			}else if(r >= 0.75 && r <= 1){
-				if(limitDirections.indexOf(DIRECTION_DOWN) != -1)
-					direction = DIRECTION_DOWN;
+				if(limitDirections.indexOf(C.DIRECTION_DOWN) != -1)
+					direction = C.DIRECTION_DOWN;
 			}
 			if(!that.selectedDirection){
 				that.selectedDirection = direction;
@@ -387,20 +388,20 @@ define(function(){
 		};
 		
 		this.directionReserve = function(){
-			if(that.selectedDirection == DIRECTION_LEFT){
-				that.selectedDirection = DIRECTION_RIGHT;
+			if(that.selectedDirection == C.DIRECTION_LEFT){
+				that.selectedDirection = C.DIRECTION_RIGHT;
 				that.frameHeadX = that.faceRight[0];
 				that.frameHeadY = that.faceRight[1];
-			}else if(that.selectedDirection == DIRECTION_RIGHT){
-				that.selectedDirection = DIRECTION_LEFT;
+			}else if(that.selectedDirection == C.DIRECTION_RIGHT){
+				that.selectedDirection = C.DIRECTION_LEFT;
 				that.frameHeadX = that.faceLeft[0];
 				that.frameHeadY = that.faceLeft[1];
-			}else if(that.selectedDirection == DIRECTION_UP){
-				that.selectedDirection = DIRECTION_DOWN;
+			}else if(that.selectedDirection == C.DIRECTION_UP){
+				that.selectedDirection = C.DIRECTION_DOWN;
 				that.frameHeadX = that.faceDown[0];
 				that.frameHeadY = that.faceDown[1];
-			}else if(that.selectedDirection == DIRECTION_DOWN){
-				that.selectedDirection = DIRECTION_UP;
+			}else if(that.selectedDirection == C.DIRECTION_DOWN){
+				that.selectedDirection = C.DIRECTION_UP;
 				that.frameHeadX = that.faceUp[0];
 				that.frameHeadY = that.faceUp[1];
 			}

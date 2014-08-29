@@ -1,3 +1,4 @@
+"use strict"
 define(function(){
 	//动画信息
 	var quadData = function QuadData(){

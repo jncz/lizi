@@ -1,6 +1,7 @@
 /**
 提供基础的函数库
 */
+"use strict"
 String.prototype.startWith=function(str){     
   var reg=new RegExp("^"+str);     
   return reg.test(this);        
@@ -16,38 +17,6 @@ function $(id){
 
 function isKeyEvent(eventType){
 	return eventType.startWith("key");
-}
-
-function goLeft(e){
-	return e.keyCode == 37;
-}
-
-function goRight(e){
-	return e.keyCode == 39;
-}
-
-function goUp(e){
-	return e.keyCode == 38;
-}
-
-function goDown(e){
-	return e.keyCode == 40;
-}
-
-function getDirection(e){
-	if(goLeft(e)){
-		return DIRECTION_LEFT;
-	}else if(goRight(e)){
-		return DIRECTION_RIGHT;
-	}else if(goUp(e)){
-		return DIRECTION_UP;
-	}else if(goDown(e)){
-		return DIRECTION_DOWN;
-	}
-}
-
-function goFire(e){
-	return e.keyCode == 32;
 }
 
 function extend(c,p){

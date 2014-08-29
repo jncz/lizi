@@ -1,3 +1,4 @@
+"use strict"
 define(["engine/baseResourceLoader"],function(loader){
 	var imageLoaded = [];
 	var imageAddress = [];

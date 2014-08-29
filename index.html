@@ -2,23 +2,24 @@
 	<head>
 		<meta http-equiv=Content-Type content="text/html;charset=utf-8">
 		<title>Game 1</title>
-		<script type="text/javascript" src="engine/js/Constants.js"></script>
 		<script type="text/javascript" src="engine/js/util.js"></script>
 		<script type="text/javascript" src="engine/js/globalScope.js"></script>
 		<script type="text/javascript" src="engine/js/amd/requirejs/require.js"></script>
 		<script>
+			"use strict"
+			var actor;
 			require.config({ 
 				baseUrl: "./", 
 				paths: { 
 					"engine": "engine/js"
 				}, 
-				urlArgs: "bust=" + Date.now(),
+				urlArgs: "bust=",
 				waitSeconds: 2 
 			 }); 
-			 require( ["./booter.js","engine/MovementObject","engine/MovieClip"], 
-				function(starter,MovementObject,MovieClip2D) {
+			 require( ["./booter.js","engine/MovementObject","engine/MovieClip","engine/Constants","engine/Direction"], 
+				function(starter,MovementObject,MovieClip2D,C,direction) {
 					var imgs = ["Actor1.png","map.png","donghua.png","eff.png"];
-					var json = [];
+					var json = ["map.json","map4.json"];
 					starter.regImgRes(imgs);
 					starter.regJSONRes(json);
 					starter.regCustomerBoot(function(){
@@ -29,7 +30,7 @@
 						mc.isPlay=2;
 						mc.x=300;
 						mc.y=300;
-						stage2d.addChild(mc);
+						stage2d.addChild(mc,1);
 						
 						///////////////////////////
 						
@@ -42,7 +43,7 @@
 							mc.totalFrames = 3;
 							mc.ifReverse = false;
 							
-							mc.moveDirection = [DIRECTION_LEFT,DIRECTION_RIGHT];
+							mc.moveDirection = [C.DIRECTION_LEFT,C.DIRECTION_RIGHT];
 							
 							mc.frameHeadX = 3;
 							mc.frameHeadY = 0;
@@ -51,11 +52,11 @@
 							mc.faceUp = [3,3];
 							mc.faceDown = [3,0];
 							
-							stage2d.addChild(mc);
+							stage2d.addChild(mc,0);
 							
 							mc.addEventListener("keyDown",function(e){
 								var step = 2;
-								mc.movement(getDirection(e),step);
+								mc.movement(direction.getDirection(e),step);
 							});
 							
 							regAsMainActor(mc);

@@ -1,3 +1,4 @@
+"use strict"
 define(function(){
 	//these two callback have default parameter XMLHttpRequest object
 	return {
@@ -9,12 +10,12 @@ define(function(){
 						successCallback && successCallback(h);
 					}else{
 						failCallback && failCallback(h);
-						console.log("Fail to access URL");
+						//console.log("Fail to access URL");
 					}
 				}
 			};
 			h.open(method,url,async);
-			for(i in headers){
+			for(var i in headers){
 				h.setRequestHeader(i,headers[i]);
 			}
 			h.send(body);

@@ -1,3 +1,4 @@
+"use strict"
 define(["engine/ajax","engine/Promise","engine/QuadFrame","engine/QuadData"],function(ajax,Promise,QuadFrame,QuadData){
 	//<SubTexture name="fashi0000" x="206" y="340" width="47" height="93" frameX="-19" frameY="-5" frameWidth="70" frameHeight="103"/>
 	var getSpiritFrame = function (item){
