@@ -8,9 +8,11 @@ var jsonmap;//json地图全局对象
 var stage2d;//舞台对象
 
 
-define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promise","engine/MovieClip","engine/DisplayObject","engine/Event","engine/displayObjectContainer"],
-	function(loader,jsonLoader,xmlLoader,Promise,MovieClip2D,Stage2D,Event2D,container){
+define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promise","engine/MovieClip",
+		"engine/DisplayObject","engine/Event","engine/displayObjectContainer","engine/AudioLoader","engine/globalScope"],
+	function(loader,jsonLoader,xmlLoader,Promise,MovieClip2D,Stage2D,Event2D,container,audioLoader,g){
 	var imageAddress = [];
+	var audioAddress = [];
 	var jsonmaps = [];
 	var f = function(){};//empty function
 	
@@ -64,6 +66,8 @@ define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promis
 			p.then(function(){
 				var xmlAddress = ["spirit.xml","eff.xml"];
 				xmlLoader.load(xmlAddress);
+			}).then(function(){
+				audioLoader.load(audioAddress);
 			});
 			return p;
 		},
@@ -95,9 +99,10 @@ define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promis
 		},
 		addEvent:function(){
 			var eventObj1 = new Event2D();
-			eventObj1.eventType = "mouseDown";
+			eventObj1.eventType = "keyDown";
 			eventObj1.callback = function(ele){
 				ele.rotation = 30;
+				g.aud.test1.play();
 			};
 			stage2d.addEventListener(eventObj1);
 		},
@@ -131,6 +136,9 @@ define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promis
 		*/
 		regCustomerBoot : function(fn){
 			f = fn;
+		},
+		regAudioRes : function(audios){
+			audioAddress = audios;
 		},
 	};
 });

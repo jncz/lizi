@@ -1,5 +1,20 @@
 ﻿"use strict"
-define(function(){
+define(["engine/globalScope"],function(g){
+	var createAudioElement = function(path,name){
+		var area = $("ENGINE_AUDIO_ELEMENT_AREA");
+		if(!area){
+			area = document.createElement("div");
+			area.style.display = "none";
+			document.body.appendChild(area);
+		}
+		var audioTag = document.createElement("audio");
+		var prefix = "audio_element";
+		audioTag.setAttribute("id",prefix+"__"+name);
+		audioTag.setAttribute("src",path);
+		area.appendChild(audioTag);
+		
+		g.aud[name] = audioTag;
+	};
 	var loader = {
 		/**
 		@param audios - 为音频对象数组,格式为：[{url:url,name:name},..,..]
@@ -13,6 +28,7 @@ define(function(){
 				var path = audioObj.url;
 				var name = audioObj.name;
 				//TODO 将这些信息注册到页面中
+				createAudioElement(path,name);
 			}
 		},
 	};
