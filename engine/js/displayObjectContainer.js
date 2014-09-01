@@ -37,7 +37,7 @@ define(function(){
 			for(var i=0;i<idxs.length;i++){
 				r.push(list[i]);
 			}
-			console.log("Top Layer len: "+r[0].length);
+			//console.log("Top Layer len: "+r[0].length);
 			return r;
 		},
 	};

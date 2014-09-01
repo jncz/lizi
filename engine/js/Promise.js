@@ -1,41 +1,30 @@
 "use strict"
-define(function(){
+define(["engine/promise/q/q"],function(q){
 	var p0 = function(fn){
-		this.then = function(){
-		
+		var o = q.Promise(fn);
+		this.resolve = function(v){
+			return o.resolve(v);
 		};
-		this.all = function(){
-		
+		/**
+		@param - sfn successful fn
+		@param - efn error fn
+		*/
+		this.then = function(sfn,efn){
+			//TODO
+			return o.then(sfn,efn);
 		};
-		this.taskQ = [];
-		//添加任务至队列
-		if(fn)this.then(fn);
-		this.resolve = function(){
-			var fn = this.taskQ && this.taskQ[0];
-			if(fn){
-				var ret = fn.apply(this,arguments);
-				this.taskQ.shift();
-				if(ret){
-					this.resolve.apply(this,ret);
-				}
-			}
-			return this;
-		};
-		
 	};
-	p0.resolve = function(){
-		var fn = this.taskQ && this.taskQ[0];
-		if(fn){
-			var ret = fn.apply(this,arguments);
-			this.taskQ.shift();
-			if(ret){
-				this.resolve.apply(this,ret);
-			}
-		}
-		return this;
+	p0.resolve = function(v){
+		return q.resolve(v);
 	};
-	p0.prototype.then = function(){
-		console.log("aa");
+	p0.reject = function(reason){
+		return q.reject(reason);
+	};
+	/**
+	@param - ps - promise array
+	*/
+	p0.all = function(ps){
+		return q.all(ps);
 	};
 
 	var p;

@@ -104,8 +104,6 @@ define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promis
 				ele.rotation = 30;
 				g.aud.test1.currentTime = 0;
 				g.aud.test1.play();
-				g.aud.test2.currentTime = 0;
-				g.aud.test2.play();
 			};
 			stage2d.addEventListener(eventObj1);
 		},

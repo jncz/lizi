@@ -71,6 +71,7 @@ define(["engine/ajax","engine/Promise","engine/QuadFrame","engine/QuadData","eng
 							ajax.openURL("res/xml/"+d,
 								function(http){
 									var xml = http.responseXML;
+									console.log(d+"xml ---- "+xml);
 									parseSpiritXml(xml,dcs,i);
 									resolve(1);
 								},

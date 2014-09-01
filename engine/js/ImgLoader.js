@@ -1,5 +1,5 @@
 "use strict"
-define(["engine/baseResourceLoader","engine/globalScope"],function(loader,g){
+define(["engine/baseResourceLoader","engine/globalScope","engine/Promise"],function(loader,g,Promise){
 	var imageLoaded = [];
 	var imageAddress = [];
 	
