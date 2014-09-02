@@ -4,15 +4,20 @@ Note: 并不用于负责某个具体对象如何绘制
 */
 "use strict"
 define(["engine/Constants","engine/displayObjectContainer"],function(C,container){
-	var Stage2D = function(width,height){
+	var Stage2D = function(){
 		var that;
 		
 		//场景宽度
-		var stageWidth = width || 1024;
-	 
+		var stageWidth = 1024;
+		this.setStageWidth = function(w){
+			stageWidth = w;
+		}
+		
 		//场景高度
-		var stageHeight= height || 768;
-
+		var stageHeight= 768;
+		this.setStageHeight = function(h){
+			stageHeight = h;
+		}
 		//事件列表
 		var eventList = [];
 		
@@ -28,7 +33,8 @@ define(["engine/Constants","engine/displayObjectContainer"],function(C,container
 		}
 		
 		this.start = function(){
-			setTimeout(this.paint,0);
+			//setTimeout(this.paint,0);
+			requestAnimationFrame(this.paint);
 		}
 	 
 		this.fireEvent = function(e,eventType){
@@ -39,7 +45,6 @@ define(["engine/Constants","engine/displayObjectContainer"],function(C,container
 					if(eventList[j].eventType==eventType)
 					{
 						eventList[j].callback(e);
-						return;
 					}
 				}
 				return;
@@ -137,7 +142,7 @@ define(["engine/Constants","engine/displayObjectContainer"],function(C,container
 			return false;
 		}
 		
-		this.paint = function(){
+		this.paint = function(t){
 			//清理画面
 			context.clearRect(0,0,stageWidth,stageHeight);
 		 
@@ -154,10 +159,13 @@ define(["engine/Constants","engine/displayObjectContainer"],function(C,container
 					displayObjectList[i].paint();
 				}
 			}
+			/**
+			setTimeout(function(){
+				requestAnimationFrame(that.paint);
+			},1000/20);
+			*/
+			requestAnimationFrame(that.paint);
 			
-		 
-			//设置计时器延迟为0
-			setTimeout(that.paint,20);
 		}
 	};
 

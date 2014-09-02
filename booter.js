@@ -15,6 +15,8 @@ define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promis
 	var audioAddress = [];
 	var jsonmaps = [];
 	var f = function(){};//empty function
+	var canvas = null;
+	var masklayer = null;
 	
 	var createMovieClip = function(obj,idx){
 			jsonmap = obj;
@@ -71,21 +73,29 @@ define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promis
 	};
 	return {
 		boot:function(){
-			this.initCanvas()
-			.then(this.initStage)
+			this.initStage()
+			.then(this.showLoading)
 			.then(this.loadResource)
 			.then(this.initMap)
 			.then(this.startPaint)
 			.then(this.addEvent)
+			.then(this.hideLoading)
 			.then(f);
 		},
-		initCanvas:function(){
-			var canvas = $("mycanvas");
-			var stageWidth = canvas.width;
-			var stageHeight = canvas.height;
-			context = canvas.getContext("2d");//set it as global var
+		showLoading:function(){
+			var ele = document.createElement("div");
+			masklayer = ele;
+			ele.style.top = 0;
+			ele.style.left = 0;
+			ele.style.width = 100;
+			ele.style.height = 100;
+			ele.style.position = "absolute";
+			ele.innerHTML = "Loading......";
 			
-			return Promise.resolve({stageWidth:stageWidth,stageHeight:stageHeight});
+			canvas.parentNode.appendChild(ele);
+		},
+		hideLoading:function(){
+			masklayer.style.display = "none";
 		},
 		loadResource:function(){
 			var p = loader.load(imageAddress);
@@ -98,15 +108,19 @@ define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promis
 			return p;
 		},
 		startPaint : function(){
+			canvas.width = jsonmap.width;//设置画布大小
+			canvas.height = jsonmap.height;
 			var p = Promise.resolve();
 			stage2d.start();
 			return p;
 		},
-		initStage:function(stage){
+		initStage:function(){
 			var p = Promise.resolve();
 			p.then(function(){
+				canvas = $("mycanvas");
+				context = canvas.getContext("2d");//set it as global var
 				//创建场景管理器
-				stage2d=new Stage2D(stage.stageWidth,stage.stageHeight);
+				stage2d=new Stage2D();
 				//启用场景逻辑
 				stage2d.init();
 			});
