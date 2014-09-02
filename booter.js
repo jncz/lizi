@@ -43,6 +43,32 @@ define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promis
 				}
 			}
 	};
+	/**
+	@param v
+	校验配置信息对象
+	*/
+	var validate = function(v){
+		return v;
+	};
+	/**
+	@param - gcfg 全局的配置对象
+	@param - cfg 用户输入的配置对象
+	用户输入的值覆盖全局默认的配置信息,只有全局定义了的属性才可以被赋值。 未定义的会被忽略
+	*/
+	var merge = function(gcfg,cfg){
+		if(!cfg){
+			return;
+		}
+		for(var a in cfg){
+			if(typeof cfg[a] === "object" && gcfg[a]){//如果属性值依然为对象，并且全局配置里也存在，则进一步进行merge
+				merge(gcfg[a],cfg[a]);
+			}else if(Array.isArray(cfg[a]) && gcfg[a]){//如果是数组，则拷贝数组
+				gcfg[a] = [].concat(cfg[a]);//新的数组
+			}else{
+				gcfg[a] = cfg[a];
+			}
+		}
+	};
 	return {
 		boot:function(){
 			this.initCanvas()
@@ -140,6 +166,19 @@ define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promis
 		},
 		regAudioRes : function(audios){
 			audioAddress = audios;
+		},
+		/**
+		@param cfg - 配置信息对象,格式：
+		{
+			audio : {
+				enable : true / false,//是否enable音效
+				echo : true / false,//是否启用混响,似乎效果不太好
+			}
+		}
+		*/
+		config : function(cfg){
+			validate(cfg);//校验配置对象，需要的配置信息如果不对抛出错误
+			merge(g.cfg,cfg);
 		},
 	};
 });
