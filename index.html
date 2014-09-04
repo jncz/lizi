@@ -1,18 +1,21 @@
 <html>
 	<head>
 		<meta http-equiv=Content-Type content="text/html;charset=utf-8">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name = "viewport" content = "width = device-width,initial-scale=1.0, user-scalable = yes">
 		<title>Game 1</title>
 		<script type="text/javascript" src="engine/js/util.js"></script>
 		<script type="text/javascript" src="engine/js/amd/requirejs/require.js"></script>
 		<script>
 			"use strict"
 			var actor;
+			var pp = window.performance;
 			require.config({ 
 				baseUrl: "./", 
 				paths: { 
 					"engine": "engine/js"
 				}, 
-				urlArgs: "bust=",
 				waitSeconds: 2 
 			 }); 
 			 require( ["./booter.js","engine/MovementObject","engine/MovieClip","engine/Constants","engine/Direction","engine/globalScope"], 
@@ -20,7 +23,7 @@
 					var imgs = ["Actor1.png","map.png","donghua.png","eff.png"];
 					var json = ["map800480.json"];
 					var audios = [{url:"res/audio/horse.ogg",name:"test1"}];
-					starter.config({audio:{enable:true,echo:false}});
+					starter.config({audio:{enable:false,echo:false}});
 					starter.regImgRes(imgs);
 					starter.regJSONRes(json);
 					starter.regAudioRes(audios);
@@ -30,8 +33,8 @@
 						var fashi = g.LOADED_XMLS[0];
 						var mc = new MovieClip2D(g.LOADED_IMGS[2],fashi.quadFrameList);
 						mc.isPlay=2;
-						mc.x=300;
-						mc.y=300;
+						mc.x=250;
+						mc.y=100;
 						stage2d.addChild(mc,1);
 						
 						///////////////////////////
@@ -39,8 +42,8 @@
 						function addMainActorClip(){
 							var mc = createMovementObj();//new MovementObject(imageLoaded[0]);
 							mc.isPlay = 1;
-							mc.x = 400;
-							mc.y = 300;
+							mc.x = 200;
+							mc.y = 100;
 							
 							mc.totalFrames = 3;
 							mc.ifReverse = false;
@@ -77,6 +80,22 @@
 						addMainActorClip();
 					});
 					starter.boot();
+					document.body.addEventListener('touchmove', function(event) {
+					  event.preventDefault();
+					}, false); 
+					document.body.addEventListener('touchend', function(event) {
+						var fashi = g.LOADED_XMLS[0];
+						var mc = new MovieClip2D(g.LOADED_IMGS[2],fashi.quadFrameList);
+						mc.isPlay=2;
+						mc.x=event.changedTouches[0].pageX;
+						mc.y=event.changedTouches[0].pageY;
+						stage2d.addChild(mc,1);
+						
+						g.aud.test1.currentTime = 0;
+						g.aud.test1.play();
+				
+						event.preventDefault();
+					}, false); 
 				} 
 			  ); 
 		</script>

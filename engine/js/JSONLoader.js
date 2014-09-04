@@ -4,7 +4,7 @@ define(["engine/ajax","engine/Promise"],function(ajax,Promise){
 	return {
 		load : function(jsonpath){
 			var p = new Promise(function(resolve,reject){
-			ajax.openURL("res/json/"+jsonpath+"?d="+Date.now(),
+			ajax.openURL("res/json/"+jsonpath,
 						function(http){
 							var jsonText = http.responseText;
 							var obj = JSON.parse(jsonText);

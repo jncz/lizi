@@ -65,6 +65,7 @@ define(["engine/event"],function(Event2D){
 		this.blend="source-over";
 		
 		this.paint = function(){
+			//performance.mark("paint_start");
 			if(this.visible){
 				this.updateFrameData();
 				
@@ -94,6 +95,15 @@ define(["engine/event"],function(Event2D){
 				
 				context.restore();
 			}
+			/**
+			performance.mark("paint_end");
+			performance.measure("paint","paint_start","paint_end");
+			var ms = performance.getEntriesByName("paint");
+			console.log("between:  "+ms[0].duration);
+			performance.clearMarks("paint_start");
+			performance.clearMarks("paint_end");
+			performance.clearMeasures("paint");
+			*/
 		};
 		this.updateFrameData = function(){
 			switch(this.isPlay){

@@ -143,6 +143,7 @@ define(["engine/Constants","engine/displayObjectContainer"],function(C,container
 		}
 		
 		this.paint = function(t){
+			//pp.mark("paint_start");
 			//清理画面
 			context.clearRect(0,0,stageWidth,stageHeight);
 		 
@@ -163,6 +164,15 @@ define(["engine/Constants","engine/displayObjectContainer"],function(C,container
 			setTimeout(function(){
 				requestAnimationFrame(that.paint);
 			},1000/20);
+			*/
+			/**
+			pp.mark("paint_end");
+			pp.measure("paint","paint_start","paint_end");
+			var ms = pp.getEntriesByName("paint");
+			console.log("between:  "+ms[0].duration);
+			pp.clearMarks("paint_start");
+			pp.clearMarks("paint_end");
+			pp.clearMeasures("paint");
 			*/
 			requestAnimationFrame(that.paint);
 			

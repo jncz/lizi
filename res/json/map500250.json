@@ -1,0 +1,641 @@
+{
+	"width" : 500,
+	"height" : 250,
+	"unit" : 32,
+	"srcMap" : "map.png",
+	"layers" : [{
+			"layerIdx" : 0,
+			"points" : [{
+					"point" : [0, 0],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [1, 0],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [2, 0],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [3, 0],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [4, 0],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [5, 0],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [6, 0],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [7, 0],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [8, 0],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [9, 0],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [10, 0],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [11, 0],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [12, 0],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [13, 0],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [14, 0],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [15, 0],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [15, 1],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [15, 2],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [15, 3],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [15, 4],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [15, 5],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [15, 6],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [15, 7],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [14, 6],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [13, 6],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [12, 7],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [11, 7],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [10, 7],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [9, 7],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [8, 7],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [7, 7],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [6, 7],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [5, 7],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [4, 7],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [3, 7],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [2, 7],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [1, 7],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [1, 6],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [0, 6],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [0, 5],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [0, 4],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [0, 3],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [0, 2],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [0, 1],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [1, 1],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [2, 1],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [3, 1],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [4, 1],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [5, 1],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [6, 1],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [7, 1],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [8, 1],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [9, 1],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [10, 1],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [11, 1],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [12, 1],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [13, 1],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [14, 1],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [14, 2],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [14, 3],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [14, 4],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [14, 5],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [14, 7],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [13, 7],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [0, 7],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [1, 5],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [1, 4],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [1, 3],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [1, 2],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [2, 2],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [3, 2],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [4, 2],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [5, 2],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [6, 2],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [7, 2],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [8, 2],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [9, 2],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [10, 2],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [11, 2],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [12, 2],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [13, 2],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [13, 4],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [13, 5],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [12, 6],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [11, 6],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [10, 6],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [9, 6],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [8, 6],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [7, 6],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [6, 6],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [5, 6],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [4, 6],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [3, 6],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [2, 6],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [2, 5],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [2, 4],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [2, 3],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [3, 3],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [4, 3],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [5, 3],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [6, 3],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [7, 3],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [8, 3],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [9, 3],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [10, 3],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [11, 3],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [12, 3],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [13, 3],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [12, 4],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [12, 5],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [11, 5],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [10, 5],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [9, 5],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [8, 5],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [7, 5],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [6, 5],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [5, 5],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [4, 5],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [3, 5],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [3, 4],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [4, 4],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [5, 4],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [6, 4],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [7, 4],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [8, 4],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [9, 4],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [10, 4],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [11, 4],
+					"imgPoint" : [0, 0]
+				}, {
+					"point" : [1, 0],
+					"imgPoint" : [0, 5]
+				}, {
+					"point" : [2, 0],
+					"imgPoint" : [1, 5]
+				}, {
+					"point" : [3, 0],
+					"imgPoint" : [2, 5]
+				}, {
+					"point" : [4, 0],
+					"imgPoint" : [3, 5]
+				}, {
+					"point" : [1, 1],
+					"imgPoint" : [0, 6]
+				}, {
+					"point" : [2, 1],
+					"imgPoint" : [1, 6]
+				}, {
+					"point" : [3, 1],
+					"imgPoint" : [2, 6]
+				}, {
+					"point" : [4, 1],
+					"imgPoint" : [3, 6]
+				}, {
+					"point" : [1, 2],
+					"imgPoint" : [0, 7]
+				}, {
+					"point" : [2, 2],
+					"imgPoint" : [1, 7]
+				}, {
+					"point" : [3, 2],
+					"imgPoint" : [2, 7]
+				}, {
+					"point" : [4, 2],
+					"imgPoint" : [3, 7]
+				}, {
+					"point" : [1, 3],
+					"imgPoint" : [0, 8]
+				}, {
+					"point" : [2, 3],
+					"imgPoint" : [1, 8]
+				}, {
+					"point" : [3, 3],
+					"imgPoint" : [2, 8]
+				}, {
+					"point" : [4, 3],
+					"imgPoint" : [3, 8]
+				}, {
+					"point" : [1, 4],
+					"imgPoint" : [0, 9]
+				}, {
+					"point" : [2, 4],
+					"imgPoint" : [1, 9]
+				}, {
+					"point" : [3, 4],
+					"imgPoint" : [2, 9]
+				}, {
+					"point" : [4, 4],
+					"imgPoint" : [3, 9]
+				}, {
+					"point" : [11, 2],
+					"imgPoint" : [0, 5]
+				}, {
+					"point" : [12, 2],
+					"imgPoint" : [1, 5]
+				}, {
+					"point" : [13, 2],
+					"imgPoint" : [2, 5]
+				}, {
+					"point" : [14, 2],
+					"imgPoint" : [3, 5]
+				}, {
+					"point" : [11, 3],
+					"imgPoint" : [0, 6]
+				}, {
+					"point" : [12, 3],
+					"imgPoint" : [1, 6]
+				}, {
+					"point" : [13, 3],
+					"imgPoint" : [2, 6]
+				}, {
+					"point" : [14, 3],
+					"imgPoint" : [3, 6]
+				}, {
+					"point" : [11, 4],
+					"imgPoint" : [0, 7]
+				}, {
+					"point" : [12, 4],
+					"imgPoint" : [1, 7]
+				}, {
+					"point" : [13, 4],
+					"imgPoint" : [2, 7]
+				}, {
+					"point" : [14, 4],
+					"imgPoint" : [3, 7]
+				}, {
+					"point" : [11, 5],
+					"imgPoint" : [0, 8]
+				}, {
+					"point" : [12, 5],
+					"imgPoint" : [1, 8]
+				}, {
+					"point" : [13, 5],
+					"imgPoint" : [2, 8]
+				}, {
+					"point" : [14, 5],
+					"imgPoint" : [3, 8]
+				}, {
+					"point" : [11, 6],
+					"imgPoint" : [0, 9]
+				}, {
+					"point" : [12, 6],
+					"imgPoint" : [1, 9]
+				}, {
+					"point" : [13, 6],
+					"imgPoint" : [2, 9]
+				}, {
+					"point" : [14, 6],
+					"imgPoint" : [3, 9]
+				}, {
+					"point" : [6, 2],
+					"imgPoint" : [7, 0]
+				}, {
+					"point" : [8, 5],
+					"imgPoint" : [7, 0]
+				}, {
+					"point" : [10, 2],
+					"imgPoint" : [7, 0]
+				}, {
+					"point" : [1, 6],
+					"imgPoint" : [7, 0]
+				}, {
+					"point" : [10, 7],
+					"imgPoint" : [7, 0]
+				}, {
+					"point" : [14, 0],
+					"imgPoint" : [7, 0]
+				}
+			]
+		}
+	],
+	"meta" : [{
+			"point" : ["0", "0"],
+			"attr" : {
+				"cross" : true,
+				"jump" : true
+			},
+			"bound" : [0, 0, 31, 31]
+		}, {
+			"point" : ["4", "1"],
+			"attr" : {
+				"cross" : true,
+				"jump" : true
+			},
+			"bound" : [0, 0, 31, 30]
+		}, {
+			"point" : ["1", "3"],
+			"attr" : {
+				"cross" : true,
+				"jump" : false
+			},
+			"bound" : [0, 0, 31, 31]
+		}, {
+			"point" : ["4", "2"],
+			"attr" : {
+				"cross" : false,
+				"jump" : true
+			},
+			"bound" : [0, 1, 31, 31]
+		}, {
+			"point" : ["1", "5"],
+			"attr" : {
+				"cross" : false,
+				"jump" : false
+			},
+			"bound" : [0, 0, 31, 31]
+		}, {
+			"point" : [2, "5"],
+			"attr" : {
+				"cross" : false,
+				"jump" : false
+			},
+			"bound" : [0, 0, 31, 31]
+		}, {
+			"point" : ["1", "0"],
+			"attr" : {
+				"cross" : false,
+				"jump" : false
+			},
+			"bound" : [3, 2, 31, 29]
+		}, {
+			"point" : ["0", "6"],
+			"attr" : {
+				"cross" : false,
+				"jump" : false
+			},
+			"bound" : [9, 1, 31, 31]
+		}, {
+			"point" : ["0", "5"],
+			"attr" : {
+				"cross" : false,
+				"jump" : true
+			},
+			"bound" : [31, 28, 31, 30]
+		}, {
+			"point" : ["0", "2"],
+			"attr" : {
+				"cross" : false,
+				"jump" : true
+			},
+			"bound" : [8, 4, 31, 31]
+		}, {
+			"point" : ["0", "11"],
+			"attr" : {
+				"cross" : false,
+				"jump" : true
+			},
+			"bound" : [7, 0, 15, 31]
+		}, {
+			"point" : ["2", "0"],
+			"attr" : {
+				"cross" : false,
+				"jump" : true
+			},
+			"bound" : [5, 6, 26, 22]
+		}, {
+			"point" : ["4", "0"],
+			"attr" : {
+				"cross" : false,
+				"jump" : true
+			},
+			"bound" : [0, 3, 31, 29]
+		}, {
+			"point" : ["0", "9"],
+			"attr" : {
+				"cross" : true,
+				"jump" : false
+			},
+			"bound" : [2, 2, 31, 29]
+		}, {
+			"point" : ["3", "9"],
+			"attr" : {
+				"cross" : true,
+				"jump" : false
+			},
+			"bound" : [0, 2, 31, 29]
+		}
+	]
+}

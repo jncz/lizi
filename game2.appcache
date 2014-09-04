@@ -1,0 +1,44 @@
+CACHE MANIFEST
+# Version 17
+
+CACHE:
+engine/js/ajax.js
+engine/js/AudioLoader.js
+engine/js/baseResourceLoader.js
+engine/js/Constants.js
+engine/js/Direction.js
+engine/js/DisplayObject.js
+engine/js/displayObjectContainer.js
+engine/js/Event.js
+engine/js/globalScope.js
+engine/js/ImgLoader.js
+engine/js/JSONLoader.js
+engine/js/loadQueue.js
+engine/js/MovementObject.js
+engine/js/MovieClip.js
+engine/js/Promise.js
+engine/js/QuadData.js
+engine/js/QuadFrame.js
+engine/js/util.js
+engine/js/XMLLoader.js
+engine/js/promise/q/q.js
+engine/js/amd/requirejs/require.js
+res/audio/horse.ogg
+res/audio/test.ogg
+res/images/Actor1.png
+res/images/donghua.png
+res/images/eff.png
+res/images/map.png
+res/json/map.json
+res/xml/eff.xml
+res/xml/spirit.xml
+booter.js
+main.js
+
+FALLBACK:
+# This will enable imagename4.png to be as a replacement for 
+# all resources under the images dir when there is no network connectivity.
+
+NETWORK:
+# This will prevent other network resources from being accessed.
+*

@@ -1,11 +1,11 @@
-"use strict"
+ï»¿"use strict"
 
 var context;//canvas context
-var unit;//ÔªËØµÄµ¥Î»³¤¶È
-var maxXUnit;//X·½Ïò×î´óµ¥Î»¸öÊı
-var maxYUnit;//Y·½Ïò×î´óµ¥Î»¸öÊı
-var jsonmap;//jsonµØÍ¼È«¾Ö¶ÔÏó
-var stage2d;//ÎèÌ¨¶ÔÏó
+var unit;//å…ƒç´ çš„å•ä½é•¿åº¦
+var maxXUnit;//Xæ–¹å‘æœ€å¤§å•ä½ä¸ªæ•°
+var maxYUnit;//Yæ–¹å‘æœ€å¤§å•ä½ä¸ªæ•°
+var jsonmap;//jsonåœ°å›¾å…¨å±€å¯¹è±¡
+var stage2d;//èˆå°å¯¹è±¡
 
 
 define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promise","engine/MovieClip",
@@ -18,13 +18,16 @@ define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promis
 	var canvas = null;
 	var masklayer = null;
 	
+	var vw;//å±å¹•å¯è§†å®½åº¦visual width
+	var vh;//å±å¹•å¯è§†é«˜åº¦visual height
+	
 	var createMovieClip = function(obj,idx){
 			jsonmap = obj;
 			unit = obj.unit;
 			maxXUnit = Math.floor(jsonmap.width/unit);
 			maxYUnit = Math.floor(jsonmap.height/unit);
 			var layers = obj.layers;
-			//var idx = container.add();//Ôö¼ÓÒ»ĞÂ²ã
+			//var idx = container.add();//å¢åŠ ä¸€æ–°å±‚
 			for(var i=0;i<layers.length;i++){
 				var layer = layers[i];
 				var points = layer.points;
@@ -32,11 +35,15 @@ define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promis
 					var point = points[j];
 					var imgPoint = point.imgPoint;
 					var rawPoint = point.point;
-					
+					var x = (rawPoint[0]+0.5)*unit;//ä¸ºä»€ä¹ˆè¦åç§»0.5å‘¢ï¼ŒMovieClipä¸­çš„paintæ–¹æ³•ï¼Œä¼šå°†åæ ‡ç‚¹translateåˆ°çŸ©å½¢çš„ä¸­å¿ƒç‚¹ç„¶åæ‰drawImage
+					var y = (rawPoint[1]+0.5)*unit;
+					if(x > vw || y > vh){//å¦‚æœåœ°å›¾æ¯”å¯è§†åŒºåŸŸåå¤§ï¼Œ åˆ™å¤§çš„éƒ¨åˆ†ä¸è¢«åŠ å…¥ç»˜åˆ¶åˆ—è¡¨ä¸­ï¼Œæ”¹è¿›æ€§èƒ½
+						continue;
+					}
 					var mc = new MovieClip2D(g.LOADED_IMGS[1]);
 					mc.isPlay = 1;
-					mc.x = (rawPoint[0]+0.5)*unit;//ÎªÊ²Ã´ÒªÆ«ÒÆ0.5ÄØ£¬MovieClipÖĞµÄpaint·½·¨£¬»á½«×ø±êµãtranslateµ½¾ØĞÎµÄÖĞĞÄµãÈ»ºó²ÅdrawImage
-					mc.y = (rawPoint[1]+0.5)*unit;
+					mc.x = x;
+					mc.y = y;
 					mc.frameW = unit;
 					mc.frameH = unit;
 					mc.frameHeadX = imgPoint[0];
@@ -47,25 +54,25 @@ define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promis
 	};
 	/**
 	@param v
-	Ğ£ÑéÅäÖÃĞÅÏ¢¶ÔÏó
+	æ ¡éªŒé…ç½®ä¿¡æ¯å¯¹è±¡
 	*/
 	var validate = function(v){
 		return v;
 	};
 	/**
-	@param - gcfg È«¾ÖµÄÅäÖÃ¶ÔÏó
-	@param - cfg ÓÃ»§ÊäÈëµÄÅäÖÃ¶ÔÏó
-	ÓÃ»§ÊäÈëµÄÖµ¸²¸ÇÈ«¾ÖÄ¬ÈÏµÄÅäÖÃĞÅÏ¢,Ö»ÓĞÈ«¾Ö¶¨ÒåÁËµÄÊôĞÔ²Å¿ÉÒÔ±»¸³Öµ¡£ Î´¶¨ÒåµÄ»á±»ºöÂÔ
+	@param - gcfg å…¨å±€çš„é…ç½®å¯¹è±¡
+	@param - cfg ç”¨æˆ·è¾“å…¥çš„é…ç½®å¯¹è±¡
+	ç”¨æˆ·è¾“å…¥çš„å€¼è¦†ç›–å…¨å±€é»˜è®¤çš„é…ç½®ä¿¡æ¯,åªæœ‰å…¨å±€å®šä¹‰äº†çš„å±æ€§æ‰å¯ä»¥è¢«èµ‹å€¼ã€‚ æœªå®šä¹‰çš„ä¼šè¢«å¿½ç•¥
 	*/
 	var merge = function(gcfg,cfg){
 		if(!cfg){
 			return;
 		}
 		for(var a in cfg){
-			if(typeof cfg[a] === "object" && gcfg[a]){//Èç¹ûÊôĞÔÖµÒÀÈ»Îª¶ÔÏó£¬²¢ÇÒÈ«¾ÖÅäÖÃÀïÒ²´æÔÚ£¬Ôò½øÒ»²½½øĞĞmerge
+			if(typeof cfg[a] === "object" && gcfg[a]){//å¦‚æœå±æ€§å€¼ä¾ç„¶ä¸ºå¯¹è±¡ï¼Œå¹¶ä¸”å…¨å±€é…ç½®é‡Œä¹Ÿå­˜åœ¨ï¼Œåˆ™è¿›ä¸€æ­¥è¿›è¡Œmerge
 				merge(gcfg[a],cfg[a]);
-			}else if(Array.isArray(cfg[a]) && gcfg[a]){//Èç¹ûÊÇÊı×é£¬Ôò¿½±´Êı×é
-				gcfg[a] = [].concat(cfg[a]);//ĞÂµÄÊı×é
+			}else if(Array.isArray(cfg[a]) && gcfg[a]){//å¦‚æœæ˜¯æ•°ç»„ï¼Œåˆ™æ‹·è´æ•°ç»„
+				gcfg[a] = [].concat(cfg[a]);//æ–°çš„æ•°ç»„
 			}else{
 				gcfg[a] = cfg[a];
 			}
@@ -108,20 +115,22 @@ define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promis
 			return p;
 		},
 		startPaint : function(){
-			canvas.width = jsonmap.width;//ÉèÖÃ»­²¼´óĞ¡
-			canvas.height = jsonmap.height;
+			canvas.width = jsonmap.width > vw?vw:jsonmap.width;//è®¾ç½®ç”»å¸ƒå¤§å°,æ ¹æ®å®¢æˆ·ç«¯å¯è§†åŒºåŸŸå¤§å°è®¾ç½®ï¼Œå¦‚æœå¯è§†åŒºåŸŸæ¯”åœ°å›¾å°ï¼Œåˆ™æŒ‰ç…§å¯è§†åŒºåŸŸè®¾ç½®å®½é«˜
+			canvas.height = jsonmap.height > vh?vh:jsonmap.height;
 			var p = Promise.resolve();
 			stage2d.start();
 			return p;
 		},
 		initStage:function(){
+			vw = document.body.clientWidth;//visual width
+			vh = document.body.clientHeight;//visual height
 			var p = Promise.resolve();
 			p.then(function(){
 				canvas = $("mycanvas");
 				context = canvas.getContext("2d");//set it as global var
-				//´´½¨³¡¾°¹ÜÀíÆ÷
+				//åˆ›å»ºåœºæ™¯ç®¡ç†å™¨
 				stage2d=new Stage2D();
-				//ÆôÓÃ³¡¾°Âß¼­
+				//å¯ç”¨åœºæ™¯é€»è¾‘
 				stage2d.init();
 			});
 			return p;
@@ -148,13 +157,13 @@ define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promis
 			stage2d.addEventListener(eventObj1);
 		},
 		/**
-		@param imgs Í¼Æ¬µØÖ·Êı×é£¬ÓÃÓÚÒıÇæ³õÊ¼»¯Í¼Æ¬
+		@param imgs å›¾ç‰‡åœ°å€æ•°ç»„ï¼Œç”¨äºå¼•æ“åˆå§‹åŒ–å›¾ç‰‡
 		*/
 		regImgRes : function(imgs){
 			imageAddress = imgs;
 		},
 		/**
-		@param jsons jsonÎÄ¼şÂ·¾¶Êı×é
+		@param jsons jsonæ–‡ä»¶è·¯å¾„æ•°ç»„
 		*/
 		regJSONRes : function(jsons){
 			if(Array.isArray(jsons)){
@@ -173,7 +182,7 @@ define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promis
 			}
 		},
 		/**
-		@param fn - ÓÃ»§×Ô¶¨ÒåÆô¶¯º¯Êı£¬ÔÚÒıÇæÆô¶¯Íê±ÏÖ®ºó£¬µ÷ÓÃ
+		@param fn - ç”¨æˆ·è‡ªå®šä¹‰å¯åŠ¨å‡½æ•°ï¼Œåœ¨å¼•æ“å¯åŠ¨å®Œæ¯•ä¹‹åï¼Œè°ƒç”¨
 		*/
 		regCustomerBoot : function(fn){
 			f = fn;
@@ -182,16 +191,16 @@ define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promis
 			audioAddress = audios;
 		},
 		/**
-		@param cfg - ÅäÖÃĞÅÏ¢¶ÔÏó,¸ñÊ½£º
+		@param cfg - é…ç½®ä¿¡æ¯å¯¹è±¡,æ ¼å¼ï¼š
 		{
 			audio : {
-				enable : true / false,//ÊÇ·ñenableÒôĞ§
-				echo : true / false,//ÊÇ·ñÆôÓÃ»ìÏì,ËÆºõĞ§¹û²»Ì«ºÃ
+				enable : true / false,//æ˜¯å¦enableéŸ³æ•ˆ
+				echo : true / false,//æ˜¯å¦å¯ç”¨æ··å“,ä¼¼ä¹æ•ˆæœä¸å¤ªå¥½
 			}
 		}
 		*/
 		config : function(cfg){
-			validate(cfg);//Ğ£ÑéÅäÖÃ¶ÔÏó£¬ĞèÒªµÄÅäÖÃĞÅÏ¢Èç¹û²»¶ÔÅ×³ö´íÎó
+			validate(cfg);//æ ¡éªŒé…ç½®å¯¹è±¡ï¼Œéœ€è¦çš„é…ç½®ä¿¡æ¯å¦‚æœä¸å¯¹æŠ›å‡ºé”™è¯¯
 			merge(g.cfg,cfg);
 		},
 	};
