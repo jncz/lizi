@@ -1,4 +1,4 @@
-/**
+ï»¿/**
 this object is used for holding the global varible.
 */
 "use strict"
@@ -10,11 +10,11 @@ define(function(){
 		aud : {},
 		cfg : {
 				audio : {
-						enable : false,//ÊÇ·ñenableÒôĞ§
-						echo : false,//ÊÇ·ñÆôÓÃ»ìÏì,ËÆºõĞ§¹û²»Ì«ºÃ
+						enable : false,//æ˜¯å¦enableéŸ³æ•ˆ
+						echo : false,//æ˜¯å¦å¯ç”¨æ··å“,ä¼¼ä¹æ•ˆæœä¸å¤ªå¥½
 				},
 				opt : {
-					regionPaint : false,//ÊÇ·ñÆôÓÃ¾Ö²¿»æÖÆÓÅ»¯£¬½ö½ö»æÖÆ±ä¶¯µÄ¾Ö²¿
+					regionPaint : false,//æ˜¯å¦å¯ç”¨å±€éƒ¨ç»˜åˆ¶ä¼˜åŒ–ï¼Œä»…ä»…ç»˜åˆ¶å˜åŠ¨çš„å±€éƒ¨
 				}
 			  },
 
