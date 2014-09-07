@@ -11,13 +11,13 @@
 			var img;
 			var context;
 			function paint(){
-				
 				context.save();
+				context.clearRect(0,0,300,200);
 				context.globalCompositeOperation = "source-over";
 				context.globalAlpha = 1;
-				context.translate(16,16);
+				context.translate(32,32);
 				context.scale(1,1);
-				context.drawImage(img,0,0,32,32,-16,-16,32,32);
+				context.drawImage(img,0,0,64,64,-32,-32,64,64);
 				context.restore();
 				requestAnimationFrame(paint);
 			}

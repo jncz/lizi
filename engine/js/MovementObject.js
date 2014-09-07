@@ -1,3 +1,6 @@
+/**
+该对象用于表示，受鼠标，键盘，触碰等事件控制的对象，在这些事件控制之下，该对象具有可动的属性。
+*/
 "use strict"
 define(["engine/Constants"],function(C){
 	function changeFace(targetObj,face){
@@ -5,6 +8,8 @@ define(["engine/Constants"],function(C){
 		targetObj.frameHeadY = face[1];
 	};
 	var MovementObject = function(img,data){
+		this.px = 0;//元素的上一次绘制时所在坐标
+		this.py = 0;
 		this.img = img;
 		this.data = data;
 		this.selectedDirection;
@@ -71,18 +76,22 @@ define(["engine/Constants"],function(C){
 			switch(that.selectedDirection){
 				case C.DIRECTION_LEFT:
 					changeFace(that,that.faceLeft);
+					that.px = that.x;
 					that.x -= x0Step;
 					break;
 				case C.DIRECTION_RIGHT:
 					changeFace(that,that.faceRight);
+					that.px = that.x;
 					that.x += x1Step;
 					break;
 				case C.DIRECTION_UP:
 					changeFace(that,that.faceUp);
+					that.py = that.y;
 					that.y -= y0Step;
 					break;
 				case C.DIRECTION_DOWN:
 					changeFace(that,that.faceDown);
+					that.py = that.y;
 					that.y += y1Step;
 					break;
 			}

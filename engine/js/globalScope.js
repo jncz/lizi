@@ -12,6 +12,9 @@ define(function(){
 				audio : {
 						enable : false,//是否enable音效
 						echo : false,//是否启用混响,似乎效果不太好
+				},
+				opt : {
+					regionPaint : false,//是否启用局部绘制优化，仅仅绘制变动的局部
 				}
 			  },
 

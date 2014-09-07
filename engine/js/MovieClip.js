@@ -1,9 +1,15 @@
 "use strict"
 define(["engine/event"],function(Event2D){
+	/**
+	@param img - 用于截取的原图
+	@param data - 帧数据，表示该动画元素一共有多少帧，这些帧会依次播放。帧对象类型为：QuadFrame
+	*/
 	var MovieClip2D = function(img,data){
+		this.painted = false;//用来表明该元素已经被绘制过了。
+		this.animation = ((data != null) || (this.totalFrames>0));//用于表明是否是动画，有些元素，可能只是静态的背景，装饰之类的。
 		this.img = img;
 		this.data = data;
-		this.x = 0;
+		this.x = 0;//元素的当前坐标
 		this.y = 0;
 		this.rotation = 0;
 		this.scaleX = 1;
@@ -56,7 +62,7 @@ define(["engine/event"],function(Event2D){
 		this.nameId=0;
 		
 		//动画播放速度
-		this.animationSpeed=24;
+		this.animationSpeed=20;
 	 
 		//用于计算过去的时间
 		this.animationTime=0;
@@ -91,8 +97,6 @@ define(["engine/event"],function(Event2D){
 						context.drawImage(this.img,this.mcX,this.mcY,this.frameW,this.frameH,-this.frameW/2,-this.frameH/2,this.frameW,this.frameH);
 						break;
 				}
-				
-				
 				context.restore();
 			}
 			/**
@@ -106,6 +110,7 @@ define(["engine/event"],function(Event2D){
 			*/
 		};
 		this.updateFrameData = function(){
+			this.painted = true;//被绘制过，就设置为true
 			switch(this.isPlay){
 				case 1://From static image
 					this.mcY = this.frameHeadY*this.frameH;
@@ -114,6 +119,7 @@ define(["engine/event"],function(Event2D){
 				case 2://From xml definition
 					if(this.data){
 						var cFrame = this.data[this.currentFrame];
+
 						this.width=cFrame.w;
 						this.height=cFrame.h;
 						this.mcX=cFrame.x;
@@ -123,6 +129,7 @@ define(["engine/event"],function(Event2D){
 						this.frameWidth=cFrame.frameW;
 						this.frameHeight=cFrame.frameH;
 						this.totalFrames=data.length;
+
 					}
 					break;
 			}

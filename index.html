@@ -23,7 +23,7 @@
 					var imgs = ["Actor1.png","map.png","donghua.png","eff.png"];
 					var json = ["map800480.json"];
 					var audios = [{url:"res/audio/horse.ogg",name:"test1"}];
-					starter.config({audio:{enable:false,echo:false}});
+					starter.config({audio:{enable:false,echo:false},opt:{regionPaint:true}});
 					starter.regImgRes(imgs);
 					starter.regJSONRes(json);
 					starter.regAudioRes(audios);
@@ -42,8 +42,8 @@
 						function addMainActorClip(){
 							var mc = createMovementObj();//new MovementObject(imageLoaded[0]);
 							mc.isPlay = 1;
-							mc.x = 200;
-							mc.y = 100;
+							mc.x = 16;
+							mc.y = 16;
 							
 							mc.totalFrames = 3;
 							mc.ifReverse = false;
