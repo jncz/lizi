@@ -1,0 +1,120 @@
+﻿<html>
+	<head>
+		<meta http-equiv=Content-Type content="text/html;charset=utf-8">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name = "viewport" content = "width = device-width,initial-scale=1.0, user-scalable = no">
+		<title>Canvas clean rect 性能基准测试</title>
+		<script type="text/javascript" src="../engine/js/util.js"></script>
+		<script>
+			"use strict"
+			var runtimes = 1;//10w
+			var unit = 32;//每个方格的单位
+			var hunit = unit/2;//unit的一半 haft unit
+			var cw;
+			var ch;
+			var eles = [];//待绘制的元素
+			var img;
+			
+			function paint_cleanSingleRect_paintEveryRect(context){
+				
+				var len = eles.length;
+				for(var i=0;i<len;i++){
+					context.save();
+					context.globalCompositeOperation = "source-over";
+					context.globalAlpha = 1;
+					context.scale(1,1);
+					var ele = eles[i];
+					var x = ele.x;
+					var y = ele.y;
+					context.clearRect(x-hunit,y-hunit,unit,unit);
+					context.translate(ele.x,ele.y);
+					context.drawImage(img,0,0,unit,unit,-16,-16,unit,unit);
+					context.restore();
+				}
+				//requestAnimationFrame(paint_cleanSingleRect_paintEveryRect);
+			}
+			
+			function paint_cleanWholeRect_paintEveryRect(context){
+				context.clearRect(0,0,cw,ch);
+				var len = eles.length;
+				for(var i=0;i<len;i++){
+					context.save();
+					context.globalCompositeOperation = "source-over";
+					context.globalAlpha = 1;
+					context.scale(1,1);
+					var ele = eles[i];
+					context.translate(ele.x,ele.y);
+					context.drawImage(img,0,0,unit,unit,-16,-16,unit,unit);
+					context.restore();
+				}
+				//requestAnimationFrame(paint_cleanWholeRect_paintEveryRect);
+			}
+			/**
+			准备数据，将数据准备工作放到绘制逻辑之外，避免对绘制性能造成影响。
+			*/
+			function setup(cw,ch){
+				cw = cw;
+				ch = ch;
+				eles = [];
+				for(var y=0;y<Math.floor(ch/unit);y++){
+					for(var x=0;x<Math.floor(cw/unit);x++){
+						var ele = {x:(x+0.5)*unit,y:(y+0.5)*unit};
+						eles.push(ele);
+					}
+				}
+			}
+			/**
+			@param fn - 待运行function
+			@param w - canvas width
+			@param h - canvas height
+			*/
+			function measure(fn,w,h){
+				setup(w,h);
+				var c = document.createElement("canvas");
+				c.setAttribute("id","canvas_"+Date.now());
+				c.setAttribute("width",w);
+				c.setAttribute("height",h);
+				document.body.appendChild(c);
+				var ctx = c.getContext("2d");
+				
+				performance.mark("start");
+				for(var i=0;i<runtimes;i++){
+					fn(ctx);
+				}
+				performance.mark("end");
+				performance.measure("paint","start","end");
+				var ms = performance.getEntriesByName("paint");
+				console.log(fn.name+" width:"+w+" height:"+h+" 耗时："+ms[0].duration);
+				performance.clearMarks("paint_start");
+				performance.clearMarks("paint_end");
+				performance.clearMeasures("paint");
+			}
+			function runTest(){
+				img = new Image();
+				img.src = "../res/images/map.png";
+				img.onload=function(){
+					if(img.complete==true){
+						//measure(paint_cleanWholeRect_paintEveryRect,320,320);
+						//measure(paint_cleanWholeRect_paintEveryRect,2048,2048);
+						//measure(paint_cleanSingleRect_paintEveryRect,320,320);
+						measure(paint_cleanSingleRect_paintEveryRect,2048,2048);
+					}
+				};
+				
+			}
+		</script>
+	</head>
+	<style>
+		html,body{
+			margin:0px;
+			padding:0px;
+		}
+		canvas{
+			border:1px solid red;
+		}
+	</style>
+	<body onload="runTest()">
+		
+	</body>
+</html>
