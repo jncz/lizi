@@ -50,7 +50,9 @@ define(["engine/globalScope"],function(g){
 		}else{//如果audio 没有enable，继续创建全局的audio对象，只是play,pause方法为空方法，inst属性为null。 这样保证，即使用户后期禁用了audio，以前通过g.aud.audioName.play()调用也不会出错。
 			g.aud[name] = {};
 			g.aud[name].inst = null;
-			g.aud[name].play = function(){console.log("audio disabled");};
+			g.aud[name].play = function(){
+					//console.log("audio disabled");
+				};
 			g.aud[name].pause = function(){console.log("audio disabled");};
 		}
 	};

@@ -20,6 +20,10 @@ define(function(){
 		EVENT_MOUSE_UP   : "mouseUp",
 		EVENT_MOUSE_MOVE : "mouseMove",
 		EVENT_KEY_DOWN   : "keyDown",
+		
+		//渲染类型，渲染为静态图，或者动态图
+		RENDER_STATIC : 1,
+		RENDER_DYNAMIC : 2,
 	};
 	Object.freeze(o);
 	return o;

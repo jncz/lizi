@@ -6,7 +6,7 @@ Note: 并不用于负责某个具体对象如何绘制
 define(["engine/Constants","engine/displayObjectContainer"],function(C,container){
 	var Stage2D = function(){
 		var that;
-		
+		var hunit = unit/2;//means haft unit;
 		//场景宽度
 		var stageWidth = 1024;
 		this.setStageWidth = function(w){
@@ -145,19 +145,31 @@ define(["engine/Constants","engine/displayObjectContainer"],function(C,container
 		this.paint = function(t){
 			//pp.mark("paint_start");
 			//清理画面
-			context.clearRect(0,0,stageWidth,stageHeight);
-		 
+			if(!g.cfg.opt.regionPaint){
+				context.clearRect(0,0,stageWidth,stageHeight);
+			}
 			//重置画布的透明度
 			context.globalAlpha=1;
 		 
+			var rectCleared = {};
 			var allLayerDatas = container.all();
 			for(var x = 0;x<allLayerDatas.length;x++){
 				var displayObjectList = allLayerDatas[x];
 				//循环遍历显示对象
 				for(var i=0;i<displayObjectList.length;i++)
 				{
+					var obj = displayObjectList[i];
+					if(g.cfg.opt.regionPaint){
+						var key = (Math.floor(obj.x/unit))+"_"+(Math.floor(obj.y/unit))+"_"+obj.frameW+"_"+obj.frameH;
+						if(!rectCleared[key]){
+							context.clearRect(obj.x-hunit,obj.y-hunit,obj.frameW,obj.frameH);
+							//TODO 这里可以继续优化，只需要清除一次即可。根据之前的计算，活动元素所影响到的所有基层所占的面可以被一次清除掉。
+							rectCleared[key] = key;
+						}
+						
+					}
 					//调用显示对象的paint重绘方法
-					displayObjectList[i].paint();
+					obj.paint();
 				}
 			}
 			/**

@@ -23,7 +23,12 @@
 					var imgs = ["Actor1.png","map.png","donghua.png","eff.png"];
 					var json = ["map800480.json"];
 					var audios = [{url:"res/audio/horse.ogg",name:"test1"}];
-					starter.config({audio:{enable:false,echo:false},opt:{regionPaint:true}});
+					starter.config({
+									audio:{enable:false,echo:false},
+									opt:{regionPaint:true},
+									mouse:{enable:true},
+									touch:{enable:true},
+									});
 					starter.regImgRes(imgs);
 					starter.regJSONRes(json);
 					starter.regAudioRes(audios);
@@ -32,8 +37,8 @@
 						console.log("cust boot");
 						var fashi = g.LOADED_XMLS[0];
 						var mc = new MovieClip2D(g.LOADED_IMGS[2],fashi.quadFrameList);
-						mc.isPlay=2;
-						mc.x=250;
+						mc.renderType=C.RENDER_DYNAMIC;
+						mc.x=158;
 						mc.y=100;
 						stage2d.addChild(mc,1);
 						
@@ -41,10 +46,11 @@
 						
 						function addMainActorClip(){
 							var mc = createMovementObj();//new MovementObject(imageLoaded[0]);
-							mc.isPlay = 1;
-							mc.x = 16;
-							mc.y = 16;
-							
+							mc.renderType = C.RENDER_STATIC;
+							mc.x = 160;
+							mc.y = 170;
+							mc.width = 32;
+							mc.height = 32;
 							mc.totalFrames = 3;
 							mc.ifReverse = false;
 							
@@ -57,7 +63,7 @@
 							mc.faceUp = [3,3];
 							mc.faceDown = [3,0];
 							
-							stage2d.addChild(mc,0);
+							stage2d.addChild(mc,1);
 							
 							mc.addEventListener("keyDown",function(e){
 								var step = 2;
@@ -86,7 +92,7 @@
 					document.body.addEventListener('touchend', function(event) {
 						var fashi = g.LOADED_XMLS[0];
 						var mc = new MovieClip2D(g.LOADED_IMGS[2],fashi.quadFrameList);
-						mc.isPlay=2;
+						mc.renderType=C.RENDER_DYNAMIC;
 						mc.x=event.changedTouches[0].pageX;
 						mc.y=event.changedTouches[0].pageY;
 						stage2d.addChild(mc,1);

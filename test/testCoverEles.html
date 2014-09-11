@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>测试</title>
+
+	<link rel="stylesheet" href="/res/qunit/qunit.css">
+	<script src="/res/qunit/qunit.js"></script>
+
+	<script name="Implementation">
+	/**
+	@param fxi
+	@param fyi
+	@param lxi
+	@param lyi
+	
+	@return 
+	*/
+	function fill(fxi,fyi,lxi,lyi){
+		var result = [];
+		fxi = fxi < 0?0:fxi;
+		fyi = fyi < 0?0:fyi;
+		for(var i=fyi;i<=lyi;i++){
+			for(var x=fxi;x<=lxi;x++){
+				result.push([(x+0.5)*unit,(i+0.5)*unit]);
+			}
+		}
+		return result;
+	}
+	/**
+	@param ele
+	@param elements
+	@param w
+	@param h
+	
+	@return 数组，其中的每个元素为长度为2的数组，0位表示x，1位表示y
+	[[x1,y1],[x2,y2],..]
+	*/
+		function getCoveredEles(ele,elements,w,h){
+			var x = ele[0];
+			var y = ele[1];
+			
+			var hw = w/2;//half width
+			var hh = h/2;//half height
+			
+			var lucX = x - hw;
+			var lucY = y - hh;
+			
+			var rdcX = x + hw;
+			var rdcY = y + hh;
+			
+			var fxi = Math.floor(lucX/unit);//x index, fxi means first x axis index
+			var fyi = Math.floor(lucY/unit);//y index, 左上角覆盖的方格为[xi,yi]， 如果lucX = lucY = 17，则覆盖的方格为[0,0]
+			
+			var lxi = Math.floor(rdcX/unit);//x index, lxi means last x axis index
+			var lyi = Math.floor(rdcY/unit);//y index,右下角覆盖的方格为[xi,yi]，如果lucX = lucY = 49,则覆盖的方格为[1,1].
+			
+			//左上角为[0,0],右下角为[1,1]. 则自动补全整个矩阵[1,0],[0,1], 然后根据从左到右，从上到下的顺序将元素排序返回。
+			var result = fill(fxi,fyi,lxi,lyi);
+			
+			return result;
+		}
+	</script>
+	<script name="Env prepare">
+		var unit = 32;
+		function reInitMap(x,y){//表明是x*y矩阵
+			for(var z=0;z<y;z++){
+				for(var i=0;i<x;i++){
+					elements.push([i*unit+unit/2,z*unit+unit/2]);
+				}
+			}
+		}
+	</script>
+  <script>
+  QUnit.module("测试查找被某物体覆盖的元素",{
+	  setup: function( assert ) {
+		elements = [];
+		reInitMap(4,4);
+	  }, 
+	  teardown: function( assert ) {
+		elements = [];
+	  }
+	});
+  QUnit.test("测试方格生成程序生成的方格数目是否正确，是否为4*4个", function( assert ) {
+		assert.ok(elements.length == 16,"4*4的大小，应该有16个元素");
+  });
+  
+  QUnit.test("抽检生成的元素是否正确", function( assert ) {
+		var e1 = elements[0];//第一行第一个
+		var e2 = elements[3];//第一行最后一个
+		var e3 = elements[15];//最后一行最后一个
+		assert.ok(e1[0] == 16 && e1[1] == 16,"第一行第一个元素的x,y应该为16,16");
+		assert.ok(e2[0] == 112 && e2[1] == 16,"第一行最后一个元素的x,112,16");
+		assert.ok(e3[0] == 112 && e3[1] == 112,"最后一行最后一个元素的x,112,112");
+  });
+  
+  QUnit.test("给定元素[208,208],长宽为unit, 查找被覆盖的元素", function( assert ) {
+		var e1 = [16,16];//给定的元素，从坐标上看出，他覆盖了四个方格，中心坐标分别为[16,16],[48,16],[16,48],[48,48]
+		var eles = getCoveredEles(e1,elements,unit,unit);
+		
+		assert.ok(eles.length==4,"期待返回的数组长度为4");
+		
+		assert.ok(eles[0][0] == 16 && eles[0][1] == 16,"查找到的第一个元素是否为[16,16]");
+		assert.ok(eles[1][0] == 48 && eles[1][1] == 16,"查找到的第一个元素是否为[48,16]");
+		assert.ok(eles[2][0] == 16 && eles[2][1] == 48,"查找到的第一个元素是否为[16,48]");
+		assert.ok(eles[3][0] == 48 && eles[3][1] == 48,"查找到的第一个元素是否为[48,48]");
+  });
+  
+  QUnit.test("给定元素[0,0],长宽为unit, 查找被覆盖的元素", function( assert ) {
+		var e1 = [0,0];//给定的元素，从坐标上看出，他覆盖了四个方格，中心坐标分别为[16,16],[48,16],[16,48],[48,48]
+		var eles = getCoveredEles(e1,elements,unit,unit);
+		
+		assert.ok(eles.length==1,"期待返回的数组长度为1");
+		
+		assert.ok(eles[0][0] == 16 && eles[0][1] == 16,"查找到的第一个元素是否为[16,16]");
+  });
+  
+  QUnit.test("给定元素[32,32],长宽为unit, 查找被覆盖的元素", function( assert ) {
+		var e1 = [32,32];//给定的元素，从坐标上看出，他覆盖了四个方格，中心坐标分别为[16,16],[48,16],[16,48],[48,48]
+		var eles = getCoveredEles(e1,elements,unit,unit);
+		
+		assert.ok(eles.length==4,"期待返回的数组长度为4");
+		
+		assert.ok(eles[0][0] == 16 && eles[0][1] == 16,"查找到的第一个元素是否为[16,16]");
+		assert.ok(eles[1][0] == 48 && eles[1][1] == 16,"查找到的第一个元素是否为[48,16]");
+		assert.ok(eles[2][0] == 16 && eles[2][1] == 48,"查找到的第一个元素是否为[16,48]");
+		assert.ok(eles[3][0] == 48 && eles[3][1] == 48,"查找到的第一个元素是否为[48,48]");
+  });
+  
+  QUnit.test("给定元素[48,48],长宽为2*unit, 查找被覆盖的元素", function( assert ) {
+		var e1 = [48,48];//给定的元素，从坐标上看出，他覆盖了9个方格
+		var eles = getCoveredEles(e1,elements,2*unit,2*unit);
+		
+		assert.ok(eles.length==9,"期待返回的数组长度为9");
+		
+		assert.ok(eles[0][0] == 16 && eles[0][1] == 16,"查找到的第一个元素是否为[16,16]");
+		assert.ok(eles[1][0] == 48 && eles[1][1] == 16,"查找到的第一个元素是否为[48,16]");
+		assert.ok(eles[2][0] == 80 && eles[2][1] == 16,"查找到的第一个元素是否为[80,16]");
+		
+		assert.ok(eles[3][0] == 16 && eles[3][1] == 48,"查找到的第一个元素是否为[16,48]");
+		assert.ok(eles[4][0] == 48 && eles[4][1] == 48,"查找到的第一个元素是否为[48,48]");
+		assert.ok(eles[5][0] == 80 && eles[5][1] == 48,"查找到的第一个元素是否为[80,48]");
+		
+		assert.ok(eles[6][0] == 16 && eles[6][1] == 80,"查找到的第一个元素是否为[16,80]");
+		assert.ok(eles[7][0] == 48 && eles[7][1] == 80,"查找到的第一个元素是否为[48,80]");
+		assert.ok(eles[8][0] == 80 && eles[8][1] == 80,"查找到的第一个元素是否为[80,80]");
+  });
+  
+  
+  </script>
+</head>
+<body>
+ 
+<div id="qunit"></div>
+ 
+</body>
+</html>

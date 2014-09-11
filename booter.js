@@ -9,8 +9,8 @@ var stage2d;//舞台对象
 
 
 define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promise","engine/MovieClip",
-		"engine/DisplayObject","engine/Event","engine/displayObjectContainer","engine/AudioLoader","engine/globalScope"],
-	function(loader,jsonLoader,xmlLoader,Promise,MovieClip2D,Stage2D,Event2D,container,audioLoader,g){
+		"engine/DisplayObject","engine/Event","engine/displayObjectContainer","engine/AudioLoader","engine/globalScope","engine/Constants"],
+	function(loader,jsonLoader,xmlLoader,Promise,MovieClip2D,Stage2D,Event2D,container,audioLoader,g,C){
 	var imageAddress = [];
 	var audioAddress = [];
 	var jsonmaps = [];
@@ -37,11 +37,11 @@ define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promis
 					var rawPoint = point.point;
 					var x = (rawPoint[0]+0.5)*unit;//为什么要偏移0.5呢，MovieClip中的paint方法，会将坐标点translate到矩形的中心点然后才drawImage
 					var y = (rawPoint[1]+0.5)*unit;
-					if(x > vw || y > vh){//如果地图比可视区域偏大， 则大的部分不被加入绘制列表中，改进性能
+					if(x > vw*0.98 || y > vh*0.98){//如果地图比可视区域偏大， 则大的部分不被加入绘制列表中，改进性能
 						continue;
 					}
 					var mc = new MovieClip2D(g.LOADED_IMGS[1]);
-					mc.isPlay = 1;
+					mc.renderType = C.RENDER_STATIC;
 					mc.x = x;
 					mc.y = y;
 					mc.frameW = unit;

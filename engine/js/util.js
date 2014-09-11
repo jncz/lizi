@@ -11,6 +11,12 @@ String.prototype.endWith=function(str){
   var reg=new RegExp(str+"$");     
   return reg.test(this);        
 }
+
+Array.prototype.upush=function(ele){
+	if(this.indexOf(ele)==-1){
+		this.push(ele);
+	}
+}
 function $(id){
 	return document.getElementById(id);
 }

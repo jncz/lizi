@@ -1,12 +1,12 @@
 "use strict"
-define(["engine/event"],function(Event2D){
+define(["engine/event","engine/Constants"],function(Event2D,C){
 	/**
 	@param img - 用于截取的原图
 	@param data - 帧数据，表示该动画元素一共有多少帧，这些帧会依次播放。帧对象类型为：QuadFrame
 	*/
 	var MovieClip2D = function(img,data){
 		this.painted = false;//用来表明该元素已经被绘制过了。
-		this.animation = ((data != null) || (this.totalFrames>0));//用于表明是否是动画，有些元素，可能只是静态的背景，装饰之类的。
+		this.animation = function(){return ((data != null) || (this.totalFrames>1))};//用于表明是否是动画，有些元素，可能只是静态的背景，装饰之类的。
 		this.img = img;
 		this.data = data;
 		this.x = 0;//元素的当前坐标
@@ -20,7 +20,7 @@ define(["engine/event"],function(Event2D){
 		//偏移, 从大图上哪个坐标点开始切图
 		this.mcX = 0;
 		this.mcY = 0;
-		//帧的宽高
+		//帧的宽高,动画本身的高度假定为10像素，如果指定帧的高度为20，则相当于将原始图截取之后，在画布上放大了。
 		this.frameW = 32;
 		this.frameH = 32;
 		
@@ -43,8 +43,14 @@ define(["engine/event"],function(Event2D){
 		//总帧数
 		this.totalFrames = 0;
 		
-		//是否播放动画
-		this.isPlay = true;
+		/**
+		渲染类型
+		1. 渲染为静态图
+		2. 渲染为动态图
+		*/
+		this.renderType = C.RENDER_STATIC;
+		//是否循环播放
+		this.loop = false;
 		
 		//动画实际宽度
 		this.width=0;
@@ -83,14 +89,14 @@ define(["engine/event"],function(Event2D){
 				context.rotate(this.rotation*Math.PI/180);
 				context.scale(this.scaleX,this.scaleY);
 				
-				switch(this.isPlay){
-					case 1://From static image
+				switch(this.renderType){
+					case C.RENDER_STATIC: //From static image
 						context.drawImage(this.img,this.mcX,this.mcY,this.frameW,this.frameH,-this.frameW/2,-this.frameH/2,this.frameW,this.frameH);
 						break;
-					case 2://From xml definition
+					case C.RENDER_DYNAMIC: //From xml definition
 						context.drawImage(this.img,this.mcX,this.mcY,this.width,this.height,
-							-(this.frameX)-this.frameWidth/2,
-							-(this.frameY)-this.frameHeight/2
+							-(this.frameX)-this.frameW/2,
+							-(this.frameY)-this.frameH/2
 							,this.width,this.height);
 						break;
 					default:
@@ -111,12 +117,12 @@ define(["engine/event"],function(Event2D){
 		};
 		this.updateFrameData = function(){
 			this.painted = true;//被绘制过，就设置为true
-			switch(this.isPlay){
-				case 1://From static image
+			switch(this.renderType){
+				case C.RENDER_STATIC: //From static image
 					this.mcY = this.frameHeadY*this.frameH;
 					this.mcX = this.frameHeadX*this.frameW+this.currentFrame*this.frameW;
 					break;
-				case 2://From xml definition
+				case C.RENDER_DYNAMIC: //From xml definition
 					if(this.data){
 						var cFrame = this.data[this.currentFrame];
 
@@ -126,8 +132,8 @@ define(["engine/event"],function(Event2D){
 						this.mcY=cFrame.y;
 						this.frameX=cFrame.frameX;
 						this.frameY=cFrame.frameY;
-						this.frameWidth=cFrame.frameW;
-						this.frameHeight=cFrame.frameH;
+						this.frameW=cFrame.frameW;
+						this.frameH=cFrame.frameH;
 						this.totalFrames=data.length;
 
 					}
