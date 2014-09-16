@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Game test Promise</title>
+ 
+  <link rel="stylesheet" href="/res/qunit/qunit.css">
+  <script type="text/javascript" src="../engine/js/amd/requirejs/require.js"></script>
+  <script type="text/javascript" src="/res/qunit/qunit.js"></script>
+  
+  <script>
+	QUnit.config.autostart = true;
+	require.config({ 
+				baseUrl: "../", 
+				paths: { 
+					"engine": "engine/js"
+				}, 
+				urlArgs: "bust=" + Date.now(),
+				waitSeconds: 2 
+			 }); 
+  </script>
+  <script>
+  QUnit.module("测试角色出生检测组件");
+  QUnit.asyncTest("Promise.resolve", function( assert ) {
+	expect(1);
+	require(["engine/actor/checker"],function(checker){
+		
+		assert.ok(r != null);
+		QUnit.start();
+	});
+  });
+  </script>
+</head>
+<body>
+ 
+<div id="qunit"></div>
+ 
+</body>
+</html>

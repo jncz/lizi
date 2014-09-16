@@ -4,58 +4,51 @@
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="mobile-web-app-capable" content="yes">
 		<meta name = "viewport" content = "width = device-width,initial-scale=1.0, user-scalable = no">
-		<title>Canvas clean rect 性能基准测试</title>
+		<title>Canvas drawImage putImageData 性能基准测试</title>
 		<script type="text/javascript" src="../engine/js/util.js"></script>
 		<script>
 			"use strict"
 			var runtimes = 1000;//10w
 			var unit = 32;//每个方格的单位
 			var hunit = unit/2;//unit的一半 haft unit
-			var cw;
-			var ch;
+			var gcw;
+			var gch;
 			var eles = [];//待绘制的元素
 			var img;
 			
-			function paint_cleanSingleRect_paintEveryRect(context){
-				
-				var len = eles.length;
-				for(var i=0;i<len;i++){
-					context.save();
-					context.globalCompositeOperation = "source-over";
-					context.globalAlpha = 1;
-					context.scale(1,1);
-					var ele = eles[i];
-					var x = ele.x;
-					var y = ele.y;
-					context.clearRect(x-hunit,y-hunit,unit,unit);
-					context.translate(ele.x,ele.y);
-					context.drawImage(img,0,0,unit,unit,-16,-16,unit,unit);
-					context.restore();
-				}
-				//requestAnimationFrame(paint_cleanSingleRect_paintEveryRect);
+			/**
+			使用drawImage 绘制普通的IMAGE对象
+			*/
+			function paint_drawImage(context){
+				context.save();
+				context.clearRect(0,0,gcw,gch);
+				context.drawImage(img,0,0,gcw,gch);
+				context.restore();
 			}
-			
-			function paint_cleanWholeRect_paintEveryRect(context){
-				context.clearRect(0,0,cw,ch);
-				var len = eles.length;
-				for(var i=0;i<len;i++){
-					context.save();
-					context.globalCompositeOperation = "source-over";
-					context.globalAlpha = 1;
-					context.scale(1,1);
-					var ele = eles[i];
-					context.translate(ele.x,ele.y);
-					context.drawImage(img,0,0,unit,unit,-16,-16,unit,unit);
-					context.restore();
-				}
-				//requestAnimationFrame(paint_cleanWholeRect_paintEveryRect);
+			/**
+			使用putImageData绘制ImageData
+			*/
+			function paint_putImageData(context,imageData){
+				context.save();
+				context.clearRect(0,0,gcw,gch);
+				context.putImageData(imageData,0,0,0,0,gcw,gch);
+				context.restore();
+			}
+			/**
+			由于putImageData直接使用比较慢，考虑将图像绘制到临时的canvas之后，以这个临时的canvas为数据源使用drawImage来绘制。
+			*/
+			function paint_drawImage_using_cachedImage(context,data){
+				context.save();
+				context.clearRect(0,0,gcw,gch);
+				context.drawImage(data,0,0,gcw,gch);
+				context.restore();
 			}
 			/**
 			准备数据，将数据准备工作放到绘制逻辑之外，避免对绘制性能造成影响。
 			*/
 			function setup(cw,ch){
-				cw = cw;
-				ch = ch;
+				//gcw = cw;
+				//gch = ch;
 				eles = [];
 				for(var y=0;y<Math.floor(ch/unit);y++){
 					for(var x=0;x<Math.floor(cw/unit);x++){
@@ -65,12 +58,45 @@
 				}
 			}
 			/**
+			准备临时的canvas
+			*/
+			function prepareCanvas(){
+				var c = document.createElement("canvas");
+				c.setAttribute("id","canvas_"+Date.now());
+				c.setAttribute("width",gcw);
+				c.setAttribute("height",gch);
+				c.setAttribute("style","display:none");
+				document.body.appendChild(c);
+				
+				return c;
+			}
+			/**
+			绘制图片到临时的canvas
+			*/
+			function prepareCachedCanvas(){
+				var c = prepareCanvas();
+				var ctx = c.getContext("2d");
+				ctx.drawImage(img,0,0,gcw,gch);
+				
+				return c;
+			}
+			function prepareImageData(){
+				var c = prepareCanvas();
+				var ctx = c.getContext("2d");
+				ctx.drawImage(img,0,0,gcw,gch);
+				var data = ctx.getImageData(0,0,gcw,gch);
+				return data;
+			}
+			/**
 			@param fn - 待运行function
+			@param initFn - 初始化函数，在测试之前运行一次，做准备工作。
 			@param w - canvas width
 			@param h - canvas height
 			*/
-			function measure(fn,w,h){
-				setup(w,h);
+			function measure(fn,initFn,w,h){
+				gcw = w;
+				gch = h;
+				var data = initFn();
 				var c = document.createElement("canvas");
 				c.setAttribute("id","canvas_"+Date.now());
 				c.setAttribute("width",w);
@@ -80,7 +106,7 @@
 				
 				performance.mark("start");
 				for(var i=0;i<runtimes;i++){
-					fn(ctx);
+					fn(ctx,data);
 				}
 				performance.mark("end");
 				performance.measure("paint","start","end");
@@ -97,10 +123,9 @@
 					if(img.complete==true){
 						var vw = document.body.clientWidth;//visual width
 						var vh = document.body.clientHeight;//visual height
-						//measure(paint_cleanWholeRect_paintEveryRect,320,320);
-						measure(paint_cleanWholeRect_paintEveryRect,vw,vh);
-						//measure(paint_cleanSingleRect_paintEveryRect,320,320);
-						measure(paint_cleanSingleRect_paintEveryRect,vw,vh);
+						measure(paint_drawImage,setup,vw,vh);
+						measure(paint_putImageData,prepareImageData,vw,vh);
+						measure(paint_drawImage_using_cachedImage,prepareCachedCanvas,vw,vh);
 					}
 				};
 				

@@ -63,7 +63,13 @@ define(["engine/Constants"],function(C){
 		var result = [];
 		for(var i=0;i<=maxIdx;i++){
 			var eles = list[i];
-			var coveredElementPos = getCoveredEles([ele.x,ele.y],ele.frameW,ele.frameH);
+			if(!eles){
+				continue;
+			}
+			var cCoveredElePos = getCoveredEles([ele.x,ele.y],ele.frameW,ele.frameH);
+			var pCoveredElePos = getCoveredEles([ele.px,ele.py],ele.frameW,ele.frameH);
+			
+			var coveredElementPos = cCoveredElePos.concat(pCoveredElePos);
 			var subResult = [];
 			for(var x=0;x<coveredElementPos.length;x++){
 				var pos = coveredElementPos[x];
@@ -81,8 +87,35 @@ define(["engine/Constants"],function(C){
 		return result;
 	};
 	var list = {};
+	var aniList = [];//动画层有且只有1层。
 	var maxIdx = 0;//最大层数
 	var o = {
+		/**
+		添加动画
+		*/
+		addAni : function(obj){
+			var objIdx = aniList.indexOf(obj);
+			if(objIdx==-1){
+				aniList.push(obj);
+			}else{
+				aniList.upush(obj);
+			}
+		},
+		/**
+		获取动画
+		*/
+		getAni : function(idx){
+			return aniList[idx];
+		},
+		removeAni : function(obj){
+			aniList.splice(obj,1);
+		},
+		/**
+		获取所有动画元素.通过allAni可以获取全部动画元素数组，并且通过该输入也可以添加动画元素，但是注意如果直接操作数组而不加重复性判断，可能会造成重复，推荐使用addAni接口添加，或者调用被复写的数组的upush来添加unique的数组元素
+		*/
+		allAni : function(){
+			return aniList;
+		},
 		add : function(){
 			var idxs = [];
 			for(var a in list){

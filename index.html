@@ -21,7 +21,7 @@
 			 require( ["./booter.js","engine/MovementObject","engine/MovieClip","engine/Constants","engine/Direction","engine/globalScope"], 
 				function(starter,MovementObject,MovieClip2D,C,direction,g) {
 					var imgs = ["Actor1.png","map.png","donghua.png","eff.png"];
-					var json = ["map800480.json"];
+					var json = ["map1024768.json"];
 					var audios = [{url:"res/audio/horse.ogg",name:"test1"}];
 					starter.config({
 									audio:{enable:false,echo:false},
@@ -38,17 +38,17 @@
 						var fashi = g.LOADED_XMLS[0];
 						var mc = new MovieClip2D(g.LOADED_IMGS[2],fashi.quadFrameList);
 						mc.renderType=C.RENDER_DYNAMIC;
-						mc.x=158;
-						mc.y=100;
-						stage2d.addChild(mc,1);
+						mc.x=16;
+						mc.y=80;
+						//stage2d.addChild(mc,1);
 						
 						///////////////////////////
 						
 						function addMainActorClip(){
-							var mc = createMovementObj();//new MovementObject(imageLoaded[0]);
+							var mc = createMovementObj();
 							mc.renderType = C.RENDER_STATIC;
-							mc.x = 160;
-							mc.y = 170;
+							mc.x = 16;
+							mc.y = 135;
 							mc.width = 32;
 							mc.height = 32;
 							mc.totalFrames = 3;
@@ -68,6 +68,9 @@
 							mc.addEventListener("keyDown",function(e){
 								var step = 2;
 								mc.movement(direction.getDirection(e),step);
+							});
+							mc.addEventListener("keyUp",function(e){
+								mc.stop();
 							});
 							
 							regAsMainActor(mc);

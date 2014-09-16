@@ -27,7 +27,6 @@ define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promis
 			maxXUnit = Math.floor(jsonmap.width/unit);
 			maxYUnit = Math.floor(jsonmap.height/unit);
 			var layers = obj.layers;
-			//var idx = container.add();//增加一新层
 			for(var i=0;i<layers.length;i++){
 				var layer = layers[i];
 				var points = layer.points;
@@ -37,7 +36,7 @@ define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promis
 					var rawPoint = point.point;
 					var x = (rawPoint[0]+0.5)*unit;//为什么要偏移0.5呢，MovieClip中的paint方法，会将坐标点translate到矩形的中心点然后才drawImage
 					var y = (rawPoint[1]+0.5)*unit;
-					if(x > vw*0.98 || y > vh*0.98){//如果地图比可视区域偏大， 则大的部分不被加入绘制列表中，改进性能
+					if(x > vw || y > vh){//如果地图比可视区域偏大， 则大的部分不被加入绘制列表中，改进性能
 						continue;
 					}
 					var mc = new MovieClip2D(g.LOADED_IMGS[1]);
@@ -85,7 +84,6 @@ define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promis
 			.then(this.loadResource)
 			.then(this.initMap)
 			.then(this.startPaint)
-			.then(this.addEvent)
 			.then(this.hideLoading)
 			.then(f);
 		},
@@ -145,16 +143,6 @@ define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promis
 				ps.push(p);
 			});
 			return Promise.all(ps);
-		},
-		addEvent:function(){
-			var eventObj1 = new Event2D();
-			eventObj1.eventType = "keyDown";
-			eventObj1.callback = function(ele){
-				ele.rotation = 30;
-				g.aud.test1.currentTime = 0;
-				g.aud.test1.play();
-			};
-			stage2d.addEventListener(eventObj1);
 		},
 		/**
 		@param imgs 图片地址数组，用于引擎初始化图片

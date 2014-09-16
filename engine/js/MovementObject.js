@@ -22,7 +22,25 @@ define(["engine/Constants"],function(C){
 		this.allowOut = false;//是否允许该物体超出屏幕之外，对于比如人来说，人的边缘到达屏幕边缘之后，停止或者折返，对于子弹来说，允许超出屏幕，但超出屏幕之后该对象被删除。
 		
 		var that = this;
-		
+		/**
+		@param standImg 停止时站立图片的偏移坐标
+		*/
+		this.stop = function(standImg){
+			switch(that.selectedDirection){
+				case C.DIRECTION_LEFT:
+					changeFace(that,that.faceLeft);
+					break;
+				case C.DIRECTION_RIGHT:
+					changeFace(that,that.faceRight);
+					break;
+				case C.DIRECTION_UP:
+					changeFace(that,that.faceUp);
+					break;
+				case C.DIRECTION_DOWN:
+					changeFace(that,that.faceDown);
+					break;
+			}
+		};
 		/**
 		@param direction 移动方向
 		@param step 移动步伐，可选值为三种: X, {X,Y},{X1,X2,Y1,Y2},分别表示四个方向的步伐一样都为X，第二个表示X方向的步伐为X，Y的方向步伐为Y， 第三个表示向左步伐为X1，向右的步伐为X2，以此类推
@@ -77,20 +95,24 @@ define(["engine/Constants"],function(C){
 				case C.DIRECTION_LEFT:
 					changeFace(that,that.faceLeft);
 					that.px = that.x;
+					that.py = that.y;
 					that.x -= x0Step;
 					break;
 				case C.DIRECTION_RIGHT:
 					changeFace(that,that.faceRight);
 					that.px = that.x;
+					that.py = that.y;
 					that.x += x1Step;
 					break;
 				case C.DIRECTION_UP:
 					changeFace(that,that.faceUp);
+					that.px = that.x;
 					that.py = that.y;
 					that.y -= y0Step;
 					break;
 				case C.DIRECTION_DOWN:
 					changeFace(that,that.faceDown);
+					that.px = that.x;
 					that.py = that.y;
 					that.y += y1Step;
 					break;
@@ -393,7 +415,7 @@ define(["engine/Constants"],function(C){
 			return 0;//TODO
 		};
 		this.getDownBoundary = function(x,y){
-			return 0;//TODO
+			return 768;//TODO
 		};
 		
 		this.directionReserve = function(){
