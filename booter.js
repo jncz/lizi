@@ -10,8 +10,9 @@ var stage2d;//舞台对象
 
 
 define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promise","engine/MovieClip",
-		"engine/DisplayObject","engine/Event","engine/displayObjectContainer","engine/AudioLoader","engine/globalScope","engine/Constants"],
-	function(loader,jsonLoader,xmlLoader,Promise,MovieClip2D,Stage2D,Event2D,container,audioLoader,g,C){
+		"engine/DisplayObject","engine/Event","engine/displayObjectContainer","engine/AudioLoader","engine/globalScope","engine/Constants",
+		"engine/cache/Store"],
+	function(loader,jsonLoader,xmlLoader,Promise,MovieClip2D,Stage2D,Event2D,container,audioLoader,g,C,store){
 	var imageAddress = [];
 	var audioAddress = [];
 	var jsonpath = null;
@@ -103,14 +104,12 @@ define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promis
 			masklayer.style.display = "none";
 		},
 		loadResource:function(){
-			var p = loader.load(imageAddress);
-			p.then(function(){
-				var xmlAddress = ["spirit.xml","eff.xml"];
-				xmlLoader.load(xmlAddress);
-			}).then(function(){
-				audioLoader.load(audioAddress);
-			});
-			return p;
+			var p1 = loader.load(imageAddress);
+			var xmlAddress = ["spirit.xml","eff.xml"];
+			var p2 = xmlLoader.load(xmlAddress);
+			var p3 = audioLoader.load(audioAddress);
+			
+			return Promise.all([p1,p2,p3]);
 		},
 		startPaint : function(){
 			canvas.width = jsonmap.width > vw?vw:jsonmap.width;//设置画布大小,根据客户端可视区域大小设置，如果可视区域比地图小，则按照可视区域设置宽高
@@ -135,11 +134,18 @@ define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promis
 		},
 		
 		initMap:function(){
-			var p = jsonLoader.load(jsonpath).then(function(mapobj){
-				createMovieClip(mapobj);
-			});
+			if(!g.cfg.debug.enable){
+				var p = jsonLoader.load(jsonpath).then(function(mapobj){
+					createMovieClip(mapobj);
+				});
 
-			return p;
+				return p;
+			}else{
+				var mapobj = store.get("sharemap");
+				createMovieClip(mapobj);
+				var p = Promise.resolve();
+				return p;
+			}
 		},
 		/**
 		@param imgs 图片地址数组，用于引擎初始化图片

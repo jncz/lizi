@@ -30,7 +30,7 @@ define(["engine/Constants"],function(C){
 					},
 				},
 				debug : {
-					enable : false,
+					enable : true,
 				},
 			  },
 
