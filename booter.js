@@ -1,5 +1,6 @@
 ﻿"use strict"
 
+var canvas;
 var context;//canvas context
 var unit;//元素的单位长度
 var maxXUnit;//X方向最大单位个数
@@ -13,15 +14,14 @@ define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promis
 	function(loader,jsonLoader,xmlLoader,Promise,MovieClip2D,Stage2D,Event2D,container,audioLoader,g,C){
 	var imageAddress = [];
 	var audioAddress = [];
-	var jsonmaps = [];
+	var jsonpath = null;
 	var f = function(){};//empty function
-	var canvas = null;
 	var masklayer = null;
 	
 	var vw;//屏幕可视宽度visual width
 	var vh;//屏幕可视高度visual height
 	
-	var createMovieClip = function(obj,idx){
+	var createMovieClip = function(obj){
 			jsonmap = obj;
 			unit = obj.unit;
 			maxXUnit = Math.floor(jsonmap.width/unit);
@@ -47,7 +47,7 @@ define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promis
 					mc.frameH = unit;
 					mc.frameHeadX = imgPoint[0];
 					mc.frameHeadY = imgPoint[1];
-					stage2d.addChild(mc,idx);
+					stage2d.addChild(mc,i);
 				}
 			}
 	};
@@ -135,14 +135,11 @@ define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promis
 		},
 		
 		initMap:function(){
-			var ps = [];
-			jsonmaps.forEach(function(d,i,a){
-				var p = jsonLoader.load(d).then(function(mapobj){
-					createMovieClip(mapobj,i);
-				});
-				ps.push(p);
+			var p = jsonLoader.load(jsonpath).then(function(mapobj){
+				createMovieClip(mapobj);
 			});
-			return Promise.all(ps);
+
+			return p;
 		},
 		/**
 		@param imgs 图片地址数组，用于引擎初始化图片
@@ -151,23 +148,10 @@ define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promis
 			imageAddress = imgs;
 		},
 		/**
-		@param jsons json文件路径数组
+		@param json json文件路径
 		*/
-		regJSONRes : function(jsons){
-			if(Array.isArray(jsons)){
-				for(var i = 0;i<jsons.length;i++){
-					var json = jsons[i];
-					var idx = jsonmaps.indexOf(json);
-					if(idx == -1){
-						jsonmaps.push(json);
-					}
-				}
-			}else{
-				var idx = jsonmaps.indexOf(jsons);
-				if(idx == -1){
-					jsonmaps.push(jsons);
-				}
-			}
+		regJSONRes : function(json){
+			jsonpath = json;
 		},
 		/**
 		@param fn - 用户自定义启动函数，在引擎启动完毕之后，调用

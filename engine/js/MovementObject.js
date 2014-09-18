@@ -2,7 +2,7 @@
 该对象用于表示，受鼠标，键盘，触碰等事件控制的对象，在这些事件控制之下，该对象具有可动的属性。
 */
 "use strict"
-define(["engine/Constants"],function(C){
+define(["engine/Constants","engine/collision"],function(C,Collision){
 	function changeFace(targetObj,face){
 		targetObj.frameHeadX = face[0];
 		targetObj.frameHeadY = face[1];
@@ -22,6 +22,13 @@ define(["engine/Constants"],function(C){
 		this.allowOut = false;//是否允许该物体超出屏幕之外，对于比如人来说，人的边缘到达屏幕边缘之后，停止或者折返，对于子弹来说，允许超出屏幕，但超出屏幕之后该对象被删除。
 		
 		var that = this;
+		var x0Step = C.MOVE_STEP_X;
+		var x1Step = C.MOVE_STEP_X;
+		var y0Step = C.MOVE_STEP_Y;
+		var y1Step = C.MOVE_STEP_Y;
+
+		var collisionChecker = new Collision(jsonmap);
+		var cache = {x:{},y:{}};//用于cache x方向和y方向已经计算出来的可运动范围. x表示的是y坐标相同的起始，终止点，y表示x坐标相同的起始终止点
 		/**
 		@param standImg 停止时站立图片的偏移坐标
 		*/
@@ -49,10 +56,6 @@ define(["engine/Constants"],function(C){
 			//默认的行走行为为随机朝向的行走
 			that.selectedDirection = direction || that.chooseDirection();
 			
-			var x0Step = C.MOVE_STEP_X;
-			var x1Step = C.MOVE_STEP_X;
-			var y0Step = C.MOVE_STEP_Y;
-			var y1Step = C.MOVE_STEP_Y;
 			if(step){
 				if(step.length){
 					if(step.length == 2){
@@ -78,7 +81,7 @@ define(["engine/Constants"],function(C){
 			
 			//因为x,y的坐标是物体中心点的坐标，所以需要通过物体的宽高的1/2进行修正
 			if((that.selectedDirection == C.DIRECTION_LEFT && (that.x) <= x0Range)
-				|| (that.selectedDirection == C.DIRECTION_RIGHT && (that.x) >= x1Range)
+				|| (that.selectedDirection == C.DIRECTION_RIGHT && (that.x) > x1Range)
 				|| (that.selectedDirection == C.DIRECTION_UP && (that.y-that.frameH/2) <= y0Range)
 				|| (that.selectedDirection == C.DIRECTION_DOWN && (that.y+that.frameH/2) >= y1Range)
 				){
@@ -97,24 +100,36 @@ define(["engine/Constants"],function(C){
 					that.px = that.x;
 					that.py = that.y;
 					that.x -= x0Step;
+					if(that.x < x0Range){
+						that.x = x0Range+1;
+					}
 					break;
 				case C.DIRECTION_RIGHT:
 					changeFace(that,that.faceRight);
 					that.px = that.x;
 					that.py = that.y;
 					that.x += x1Step;
+					if(that.x > x1Range){
+						that.x = x1Range-1;
+					}
 					break;
 				case C.DIRECTION_UP:
 					changeFace(that,that.faceUp);
 					that.px = that.x;
 					that.py = that.y;
 					that.y -= y0Step;
+					if(that.y < y0Range){
+						that.y = y0Range+1;
+					}
 					break;
 				case C.DIRECTION_DOWN:
 					changeFace(that,that.faceDown);
 					that.px = that.x;
 					that.py = that.y;
 					that.y += y1Step;
+					if(that.y > y1Range){
+						that.y = y1Range-1;
+					}
 					break;
 			}
 		};
@@ -147,275 +162,15 @@ define(["engine/Constants"],function(C){
 		this.getRange = function(){
 			var xu = Math.floor(this.x/unit);//xu 表示x unit在X轴上第几个单位
 			var yu = Math.floor(this.y/unit);//同上
+			collisionChecker.setCheckPoint(xu,yu);
 			
 			
-			var xr = this.getXRange(xu,yu);//xr 表示x方向的range
-			var yr = this.getYRange(xu,yu);//同上
+			var xr = collisionChecker.x();
+			var yr = collisionChecker.y();
+			
 			
 			var range = [xr[0],xr[1],yr[0],yr[1]];
 			return range;
-			//return [0,1024,0,768];
-			//TODO 生成某物体的可移动距离范围，根据地图的信息生成。比如某个地方有树木，岩石等会影响通过性。
-		};
-		
-		this.getRangeRf = function(){
-			var xu = Math.floor(this.x/unit);//xu 表示x unit在X轴上第几个单位
-			var yu = Math.floor(this.y/unit);//同上
-			
-			
-			var xr = this.getXRange(xu,yu);//xr 表示x方向的range
-			var yr = this.getYRange(xu,yu);//同上
-			
-			var range = [xr[0],xr[1],yr[0],yr[1]];
-			return range;
-			//return [0,1024,0,768];
-			//TODO 生成某物体的可移动距离范围，根据地图的信息生成。比如某个地方有树木，岩石等会影响通过性。
-		};
-		/**
-		@param x 表示的是X方向上第几个单位，不是像素，比如第0个单位，那么0*unit才是像素
-		*/
-		this.getXRange = function(x,y){//TODO 考虑将已经计算出来的区域信息缓存起来，否则每次move的时候，都要遍历所有点坐标去计算，可能比较浪费性能
-			//var l = this.getLeftBoundary(x,y);
-			//var r = this.getRightBoundary(x,y);
-			
-			var blocks = this.getStopBlocksFromCache();//从cache中获取块信息
-			if(!blocks){//如果cache中没有，则开始查找
-				//获取X方向的行动区域
-				blocks = this.getBlockByY(y);//获取这一行上的所有块信息
-				blocks = this.getStopBlocks(blocks);//从这一行上的块信息中提起所有不可穿越的块 
-				//TODO 这里仅仅考虑了不可穿越，还有其他情况，甚至是目前未定义的情况，所以需要考虑引入其他变量或者回调方法来表示
-			}
-			var brange = this.getXBlockRange(blocks,x,y);
-			var startBlock = brange[0];
-			var endBlock   = brange[1];
-			
-			var startBound = this.getStopPointBound(startBlock);
-			var endBound = this.getStopPointBound(endBlock);
-			
-			
-			var dx0 = (startBlock[0]+1)*unit-startBound[2];
-			var dx1 = endBlock[0]*unit+endBound[0];
-			if(startBlock[0] == 0){//如果起始点为第一个点，那么起始x坐标为0
-				dx0 = unit-startBound[2];
-			}
-			if(endBlock[0] == maxXUnit-1){//如果点为最后一个点，那么X坐标为最大单位-1之后乘以unit再减去最后一个点左侧边无效像素数
-				dx1 = (maxXUnit-1)*unit+endBound[0];
-			}
-			
-			return [dx0,dx1];
-		};
-		/**
-		获取该点实际像素距离边的像素数
-		*/
-		this.getStopPointBound = function(point){
-			var imgs = this.getImgPointsByMapPoint(point);
-			for(var i = 0;i<imgs.length;i++){
-				var img = imgs[i];
-				var m = this.getMetaByPoint(img);
-				if(m){
-					var a = m.attr;
-					if(!a.cross){
-						return m.bound;
-					}
-				}
-			}
-			return [unit,unit,unit,unit];
-		};
-		/**
-		从给定的blocks数组中查找点(x,y)所能到达的左右边界块,所以返回值为长度为2的数组
-		*/
-		this.getXBlockRange = function(blocks,x,y){
-			if(!blocks || blocks.length == 0){
-				return [[0,y],[maxXUnit-1,y]];
-			}
-			blocks.sort(function(a,b){
-				if(a[0] > b[0]){
-					return true;
-				}
-				return false;
-			});
-			var checkPoint = [x,y];//待测点
-			blocks.push(checkPoint);
-			
-			blocks.sort(function(a,b){
-				if(a[0] > b[0]){
-					return true;
-				}
-				return false;
-			});//再次排序
-			
-			var idx = blocks.indexOf(checkPoint);
-			//idx左右的block就是左右边界
-			if(idx == 0){
-				return [[0,y],blocks[idx+1]];
-			}
-			if(idx == blocks.length-1){
-				return [blocks[idx-1],blocks[idx]];
-			}
-			return [blocks[idx-1],blocks[idx+1]];
-		};
-		this.getStopBlocksFromCache = function(){
-			//TODO
-		};
-		/**
-		@param y
-		根据y坐标获取整行的block
-		*/
-		this.getBlockByY = function(y){
-			var blocks = [];
-			for(var i=0;i<maxXUnit;i++){
-				blocks.push([i,y]);
-			}
-			return blocks;
-		};
-		this.getStopBlocks = function(blocks){
-			//地图默认都为不可通过，需要在地图上配置可通过才行
-			var stopBlocks = [];
-			for(var i=0;i<blocks.length;i++){
-				var block = blocks[i];
-				var imgs = this.getImgPointsByMapPoint(block);
-				for(var j=0;j<imgs.length;j++){
-					var img = imgs[j];
-					var m = this.getMetaByPoint(img);
-					if(m){
-						var a = m.attr;
-						if(!a.cross){
-							stopBlocks.push(block);
-							continue;
-						}
-					}
-				}
-				
-			}
-			return stopBlocks;
-		};
-		//根据地图上的点获取该点图像在原始图片中的点坐标
-		this.getImgPointByMapPoint = function(point){
-			var imgPoints = this.getImgPointsByMapPoint(point);
-			if(!imgPoints || imgPoints.length == 0){
-				return null;
-			}else{
-				return imgPoints[0];//第一个为最表层的点
-			}
-		};
-		//根据地图上的点获取该点图像在原始图片中的点坐标集
-		this.getImgPointsByMapPoint = function(point){
-			var valid = this.isValidPoint(point);
-			if(!valid){
-				return null;
-			}
-			var imgPoints = [];
-			var layers = jsonmap.layers;
-			for(var i=layers.length-1;i>=0;i--){//从最上层开始取
-				var layer = layers[i];
-				var points = layer.points;
-				for(var j=points.length-1;j>=0;j--){//最后被压入数组的点是最后绘制的，所以更接近表面，所以倒序检测
-					var p = points[j];
-					if(p.point[0] == point[0] && p.point[1] == point[1]){
-						imgPoints.push(p.imgPoint);
-					}
-				}
-			}
-			return imgPoints;
-		};
-		/**
-		检测输入点是否为有效点，有效点是指在整个地图之内的点，超出的算无效点
-		*/
-		this.isValidPoint = function(point){
-			if(!point){
-				return false;
-			}
-			var x = point[0];
-			var y = point[1];
-			if((x >=0 && x <= maxXUnit) && (y >= 0 && y <= maxYUnit)){
-				return true;
-			}
-			return false;
-		};
-		this.getMetaByPoint = function(imgPoint){
-			var metas = jsonmap.meta;
-			for(var i=0;i<metas.length;i++){
-				var m = metas[i];
-				var p = m.point;
-
-				if(p[0] == imgPoint[0] && p[1] == imgPoint[1]){
-					return m;
-				}
-			}
-			return null;
-		}
-		this.getYRange = function(y){
-			var u = this.getUpBoundary(y);
-			var d = this.getDownBoundary(y);
-			return [u,d];
-		};
-
-		/**
-		@param x 单位点
-		@param y
-		以unit为单位长度，将整个画布划分为若干个矩形块，x,y表示的是横向，纵向第几个块，并不是像素数
-		以x,y为参数，找到第一个阻止行进的块信息，然后返回
-		*/
-		this.findBlock = function(x,y){//检测是否可以通过
-			var layers = jsonmap.layers;
-			var imgPoint;
-			var layer = layers[layers.length-1];//只需要考虑最上面的一层的通过性就可以了
-			var points = layer.points;
-			for(var j=points.length-1;j>0;j--){//最后被压入数组的点是最后绘制的，所以更接近表明，所以倒叙检测
-				var point = points[j];
-				var p = point.point;
-				if(p[0] == x && p[1] == y){
-					imgPoint = point.imgPoint;
-					break;
-				}
-			}
-			if(!imgPoint){
-				return null;
-			}
-			var metas = jsonmap.meta;
-			for(var i=0;i<metas.length;i++){
-				var m = metas[i];
-				var p = m.point;
-
-				if(p[0] == imgPoint[0] && p[1] == imgPoint[1]){
-					var a = m.attr;
-					if(!a.cross){
-						return m;
-					}
-				}
-				
-			}
-			return null;
-		};
-		this.getLeftBoundary = function(x,y){
-			for(var i=x;i>=0;i--){
-				var b = this.findBlock(i,y);
-				if(b){
-					//找到第一个障碍物之后，停止，由于图片上的内容可能并不是充满整个矩形的，
-					//所以还需要对这个矩形区域的像素进行检查，看看是否还能再往前进多少像素
-					var bound = b.bound;//bound为长度为4的数组，分别代表了左，上，右，下距离矩形边的距离
-					return i*unit-bound[2];//向左行进，所以要减去矩形图块的右边距
-				}
-			}
-			return 0;//如果没障碍，则左边界为地图边界，为0
-		};
-		this.getRightBoundary = function(x,y){
-			var maxRightBoundary = Math.floor(jsonmap.width/jsonmap.unit);
-			for(var i=x;i<maxRightBoundary;i++){
-				var b = this.findBlock(i,y);
-				
-				if(b){
-					var bound = b.bound;
-					return i*unit+bound[0];//向右行进，要加上左边距
-				}
-			}
-			return jsonmap.width;//FIXME 如果没障碍，则右边界为地图边界，为地图最大单位
-		};
-		this.getUpBoundary = function(x,y){
-			return 0;//TODO
-		};
-		this.getDownBoundary = function(x,y){
-			return 768;//TODO
 		};
 		
 		this.directionReserve = function(){

@@ -9,25 +9,53 @@
 		<script>
 			"use strict"
 			var img;
+			var cacheCanvas;
 			var context;
+			var vw;
+			var vh;
 			function paint(){
+				var w = vw;
+				var h = vh;
 				context.save();
-				context.clearRect(0,0,300,200);
+				context.clearRect(0,0,w,h);
 				context.globalCompositeOperation = "source-over";
 				context.globalAlpha = 1;
-				context.translate(32,32);
-				context.scale(1,1);
-				context.drawImage(img,0,0,64,64,-32,-32,64,64);
+				//context.translate(w/2,h/2);
+				//context.scale(1,1);
+				context.drawImage(cacheCanvas,0,0,w,h);
 				context.restore();
 				requestAnimationFrame(paint);
 			}
+			function cacheAsCanvas(){
+				var canvas = $("mycanvas2");
+				canvas.width = vw;
+				canvas.height = vh;
+				var w = vw;
+				var h = vh;
+				var ctx = canvas.getContext("2d");
+				ctx.save();
+				ctx.clearRect(0,0,w,h);
+				ctx.globalCompositeOperation = "source-over";
+				ctx.globalAlpha = 1;
+				ctx.translate(w/2,h/2);
+				ctx.scale(1,1);
+				ctx.drawImage(img,0,0,w,h,-w/2,-h/2,w,h);
+				ctx.restore();
+				
+				cacheCanvas = canvas;
+			}
 			function runTest(){
+				vw = document.body.clientWidth;//visual width
+				vh = document.body.clientHeight;//visual height
 				var canvas = $("mycanvas");
+				canvas.width = vw;
+				canvas.height = vh;
 				context = canvas.getContext("2d");
 				img = new Image();
 				img.src = "res/images/map.png";
 				img.onload=function(){
 					if(img.complete==true){
+						cacheAsCanvas();
 						paint();
 					}
 				};
@@ -46,5 +74,6 @@
 	</style>
 	<body onload="runTest()">
 		<canvas id="mycanvas" width="300" height="200"></canvas>
+		<canvas id="mycanvas2" width="300" height="200" style="display:none"></canvas>
 	</body>
 </html>

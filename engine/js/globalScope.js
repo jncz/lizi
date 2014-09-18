@@ -2,7 +2,7 @@
 this object is used for holding the global varible.
 */
 "use strict"
-define(function(){
+define(["engine/Constants"],function(C){
 	var g = {
 		LOADED_IMGS : [],
 		LOADED_XMLS : [],
@@ -21,6 +21,16 @@ define(function(){
 				},
 				touch : {//触摸相关设置
 					enable : true,//是否启用触摸
+				},
+				collision : {//用于指定碰撞检测算法中，是以物体占据的方格进行判断，还是以物体实际形状进行检测。比如，有个方格，32*32大小，里面的内容物只有2*2大小，那么如果去做碰撞检测，可能会有些奇怪，两个物体实际都没碰上，但是却无法前进，这时候使用物体的实际形状进行检测就比较好些。
+					type : C.COLLISION_OBJ,//可选的值还有C.COLLISION_RECT
+					blank : {//设定地图的空白部分的属性，所谓空白部分是指设计地图时，未被背景覆盖的部分
+						cross : true,//是否可穿越
+						jump : true,//是否可跳跃
+					},
+				},
+				debug : {
+					enable : false,
 				},
 			  },
 

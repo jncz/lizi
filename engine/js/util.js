@@ -17,6 +17,17 @@ Array.prototype.upush=function(ele){
 		this.push(ele);
 	}
 }
+Array.prototype.indexOfPoint=function(p){
+	for(var i=0;i<this.length;i++){
+		if(p[0] == this[i][0] && p[1] == this[i][1]){
+			return i;
+		}
+	}
+	return -1;
+}
+Array.prototype.existPoint=function(p){
+	return this.indexOfPoint(p)!=-1;
+}
 function $(id){
 	return document.getElementById(id);
 }

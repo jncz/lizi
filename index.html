@@ -21,11 +21,11 @@
 			 require( ["./booter.js","engine/MovementObject","engine/MovieClip","engine/Constants","engine/Direction","engine/globalScope"], 
 				function(starter,MovementObject,MovieClip2D,C,direction,g) {
 					var imgs = ["Actor1.png","map.png","donghua.png","eff.png"];
-					var json = ["map1024768.json"];
+					var json = "map1024768.json";
 					var audios = [{url:"res/audio/horse.ogg",name:"test1"}];
 					starter.config({
 									audio:{enable:false,echo:false},
-									opt:{regionPaint:true},
+									opt:{regionPaint:false},
 									mouse:{enable:true},
 									touch:{enable:true},
 									});
@@ -39,7 +39,7 @@
 						var mc = new MovieClip2D(g.LOADED_IMGS[2],fashi.quadFrameList);
 						mc.renderType=C.RENDER_DYNAMIC;
 						mc.x=16;
-						mc.y=80;
+						mc.y=112;
 						//stage2d.addChild(mc,1);
 						
 						///////////////////////////
@@ -47,8 +47,8 @@
 						function addMainActorClip(){
 							var mc = createMovementObj();
 							mc.renderType = C.RENDER_STATIC;
-							mc.x = 16;
-							mc.y = 135;
+							mc.x = 690;
+							mc.y = 270;
 							mc.width = 32;
 							mc.height = 32;
 							mc.totalFrames = 3;
@@ -63,10 +63,10 @@
 							mc.faceUp = [3,3];
 							mc.faceDown = [3,0];
 							
-							stage2d.addChild(mc,1);
+							stage2d.addAniObj(mc);
 							
 							mc.addEventListener("keyDown",function(e){
-								var step = 2;
+								var step = 5;
 								mc.movement(direction.getDirection(e),step);
 							});
 							mc.addEventListener("keyUp",function(e){

@@ -92,15 +92,29 @@ define(["engine/event","engine/Constants"],function(Event2D,C){
 				switch(this.renderType){
 					case C.RENDER_STATIC: //From static image
 						context.drawImage(this.img,this.mcX,this.mcY,this.frameW,this.frameH,-this.frameW/2,-this.frameH/2,this.frameW,this.frameH);
+						if(g.cfg.debug.enable){
+							context.strokeStyle = "#FF0000";
+							context.strokeRect(-this.frameW/2,-this.frameH/2,this.frameW,this.frameH);
+						}
 						break;
 					case C.RENDER_DYNAMIC: //From xml definition
 						context.drawImage(this.img,this.mcX,this.mcY,this.width,this.height,
 							-(this.frameX)-this.frameW/2,
 							-(this.frameY)-this.frameH/2
 							,this.width,this.height);
+						if(g.cfg.debug.enable){
+							context.strokeStyle = "#FF0000";
+							context.strokeRect(-(this.frameX)-this.frameW/2,
+							-(this.frameY)-this.frameH/2
+							,this.width,this.height);
+						}
 						break;
 					default:
 						context.drawImage(this.img,this.mcX,this.mcY,this.frameW,this.frameH,-this.frameW/2,-this.frameH/2,this.frameW,this.frameH);
+						if(g.cfg.debug.enable){
+							context.strokeStyle = "#FF0000";
+							context.strokeRect(-this.frameW/2,-this.frameH/2,this.frameW,this.frameH);
+						}
 						break;
 				}
 				context.restore();

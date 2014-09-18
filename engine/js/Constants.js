@@ -24,6 +24,10 @@ define(function(){
 		//渲染类型，渲染为静态图，或者动态图
 		RENDER_STATIC : 1,
 		RENDER_DYNAMIC : 2,
+		
+		//碰撞检测算法两种算法
+		COLLISION_OBJ : 1,
+		COLLISION_RECT : 2,
 	};
 	Object.freeze(o);
 	return o;

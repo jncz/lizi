@@ -1,0 +1,347 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>测试碰撞检测模块</title>
+
+	<link rel="stylesheet" href="/res/qunit/qunit.css">
+	<script type="text/javascript" src="../engine/js/amd/requirejs/require.js"></script>
+	<script src="/res/qunit/qunit.js"></script>
+	<script>
+	QUnit.config.autostart = true;
+	require.config({ 
+				baseUrl: "../", 
+				paths: { 
+					"engine": "engine/js"
+				}, 
+				urlArgs: "bust=",
+				waitSeconds: 2 
+			 }); 
+  </script>
+	<script name="Implementation">
+	
+	</script>
+	<script name="Env prepare">
+		var unit = 32;
+		var map = {//假设地图的原始信息只包含两种图片元素，一个为[0,0]，一个为[0,1],前者可通过，后者不可通过
+				width:1024,
+				height:768,
+				unit:32,
+				layers:[],
+				meta:[],
+			};
+		/**
+		@param i - layer idx
+		@param x - x方向单位个数
+		@param y
+		*/
+		function initLayer(i,x,y){
+			var layer = {
+				layerIdx : i,
+				points:[],
+			};
+			for(var z=0;z<y;z++){
+				for(var i=0;i<x;i++){
+					var p = [i,z];
+					var imgP = [0,0];//默认都为0,0位置的图片
+					var o = {
+						point:p,
+						imgPoint:imgP,
+					};
+					layer.points.push(o);
+				}
+			}
+			return layer;
+		}
+		/**
+		@param x - 矩阵中的坐标，不是像素坐标
+		@param y
+		@param cross - 是否可以穿越
+		*/
+		function initMeta(x,y,cross){
+			var m = {
+				point:[x,y],
+				attr:{cross:cross,jump:true},
+				bound:[0,0,0,0],
+			};
+			return m;
+		}
+		/**
+		@param i - layer idx
+		@param x
+		@param y
+		*/
+		function reInitMap(i,x,y){//表明是x*y矩阵
+			var layer = initLayer(i,x,y);
+			map.layers.push(layer);
+			map.meta.push(initMeta(0,0,true));
+			map.meta.push(initMeta(0,1,false));
+		}
+		/**
+		@param i - layer index
+		@param xs - 矩阵中的坐标，不是像素坐标 xs表示x方向起点x start。 为长度为2的数组
+		@param xe - x end
+		@param ys
+		@param ye
+		本方法会将当前节点的图片设置为不可通过的图片坐标
+		*/
+		function block(i,xs,xe,ys,ye){
+			var layers = map.layers;
+			
+			for(var z=0;z<layers.length;z++){
+				var layer = layers[z];
+				var idx = layer.layerIdx;
+				if(i != idx){
+					continue;
+				}
+				var points = layer.points;
+				for(var a=0;a<points.length;a++){
+					var o = points[a];
+					var p = o.point;
+					
+					if(p[0] >= xs[0] && p[0] <= xe[0] && p[1] == xs[1] && p[1] == xe[1]){
+						o.imgPoint = [0,1];//[0,1]图像为不可穿越
+					}
+					if(p[0] == ys[0] && p[0] == ye[0] && p[1] >= ys[1] && p[1] <= ye[1]){
+						o.imgPoint = [0,1];//[0,1]图像为不可穿越
+					}
+				}
+			}
+		}
+		function getPoint(i,x,y){
+			var layers = map.layers;
+			for(var z=0;z<layers.length;z++){
+				var layer = layers[z];
+				var idx = layer.layerIdx;
+				if(i != idx){
+					continue;
+				}
+				var points = layer.points;
+				for(var a=0;a<points.length;a++){
+					var o = points[a];
+					var p = o.point;
+					if(p[0] == x && p[1] == y){
+						return o;
+					}
+				}
+			}
+			return null;
+		}
+		function resetMap(){
+			return {
+				width:1024,
+				height:768,
+				unit:32,
+				layers:[],
+				meta:[],
+			};
+		}
+	</script>
+  <script>
+  QUnit.module("测试测试集的辅助程序",{
+	  setup: function( assert ) {
+		reInitMap(0,2,2);
+	  }, 
+	  teardown: function( assert ) {
+		map = resetMap();
+	  }
+	});
+  QUnit.test("测试方格生成程序生成的方格数目是否正确，是否为2*2个", function( assert ) {
+		var ps = map.layers[0].points;
+		assert.ok(ps.length == 4,"2*2的大小，应该有4个元素");
+  }); 
+  QUnit.test("测试生成的meta数据是否正确", function( assert ) {
+		var ms = map.meta;
+		assert.ok(ms.length == 2,"应该有2个元素");
+		assert.ok(ms[0].attr.cross == true,"第一个应该可穿越");
+		assert.ok(ms[1].attr.cross == false,"第二个应该不可穿越");
+  });
+
+  QUnit.test("测试block否正确", function( assert ) {
+		block(0,[0,1],[1,1],[1,0],[1,1]);
+		var p = getPoint(0,0,1);
+		assert.ok(p != null,"[0,1]点应不为空");
+		assert.ok(p.point[0] == 0 && p.point[1] == 1,"[0,1]坐标应为[0,1]");
+		assert.ok(p.imgPoint[0] == 0 && p.imgPoint[1] == 1,"[0,1]坐标的贴图应为[0,1]");
+  });
+  
+  
+	
+	require(["engine/collision"],function(Collision){
+		QUnit.module("测试2*2小范围碰撞X方向",{
+		  setup: function( assert ) {
+			reInitMap(0,2,2);
+		  }, 
+		  teardown: function( assert ) {
+			map = resetMap();
+		  }
+		});
+		QUnit.test("测试点[0,0]在地图2*2区间可移动范围,本CASE第一行是全贯通的", function( assert ) {
+			block(0,[0,1],[1,1],[1,1],[1,1]);
+	
+			expect(3);
+			var c = new Collision(map);
+			c.setCheckPoint(0,0);//待测点为[0,0]
+			var xrange = c.x();
+			assert.ok(xrange.length == 2,"范围应包含起始与结束两个点信息");
+			assert.equal(xrange[0], 0,"起点x坐标应从0开始");
+			assert.equal(xrange[1], 1024,"终点x坐标应到1024截止");
+		});
+		
+		QUnit.test("测试点[0,0]在地图2*2区间可移动范围", function( assert ) {
+			block(0,[0,1],[1,1],[1,0],[1,1]);
+			
+			expect(3);
+			var c = new Collision(map);
+			c.setCheckPoint(0,0);//待测点为[0,0]
+			var xrange = c.x();
+			assert.ok(xrange.length == 2,"范围应包含起始与结束两个点信息");
+			assert.equal(xrange[0], 0,"起点x坐标应从0开始");
+			assert.equal(xrange[1], 32,"终点x坐标应到32截止");
+	  });
+	  
+	  QUnit.test("测试点[0,0]在地图2*2区间可移动范围,唯一停止点[1,1]", function( assert ) {
+			block(0,[1,1],[1,1],[1,1],[1,1]);
+			
+			expect(3);
+			var c = new Collision(map);
+			c.setCheckPoint(0,1);//待测点
+			var xrange = c.x();
+			assert.ok(xrange.length == 2,"范围应包含起始与结束两个点信息");
+			assert.equal(xrange[0], 0,"起点x坐标应从0开始");
+			assert.equal(xrange[1], 32,"终点x坐标应到32截止");
+	  });
+	  
+	  QUnit.test("测试点[0,0]在地图2*2区间可移动范围,无停止点", function( assert ) {
+			expect(3);
+			var c = new Collision(map);
+			c.setCheckPoint(0,1);//待测点
+			var xrange = c.x();
+			assert.ok(xrange.length == 2,"范围应包含起始与结束两个点信息");
+			assert.equal(xrange[0], 0,"起点x坐标应从0开始");
+			assert.equal(xrange[1], 1024,"终点x坐标应到32截止");
+	  });
+	  
+	  QUnit.module("测试4*4范围碰撞X方向",{
+		  setup: function( assert ) {
+			reInitMap(0,4,4);
+		  }, 
+		  teardown: function( assert ) {
+			map = resetMap();
+		  }
+		});
+		QUnit.test("测试点[0,0],截止点为[3,0]", function( assert ) {
+			block(0,[0,3],[3,3],[3,0],[3,3]);
+	
+			expect(3);
+			var c = new Collision(map);
+			c.setCheckPoint(0,0);//待测点
+			var xrange = c.x();
+			assert.ok(xrange.length == 2,"范围应包含起始与结束两个点信息");
+			assert.equal(xrange[0], 0,"起点x坐标应从0开始");
+			assert.equal(xrange[1], 96,"终点x坐标应到96截止");
+		});
+	  QUnit.test("测试点[1,1],截止点为[3,0]", function( assert ) {
+			block(0,[0,3],[3,3],[3,0],[3,3]);
+	
+			expect(3);
+			var c = new Collision(map);
+			c.setCheckPoint(1,1);//待测点
+			var xrange = c.x();
+			assert.ok(xrange.length == 2,"范围应包含起始与结束两个点信息");
+			assert.equal(xrange[0], 0,"起点x坐标应从0开始");
+			assert.equal(xrange[1], 96,"终点x坐标应到96截止");
+		});
+		
+		QUnit.test("测试点[1,1],截止路线为最外围一圈", function( assert ) {
+			block(0,[0,3],[3,3],[3,0],[3,3]);
+			block(0,[0,0],[3,0],[0,0],[0,3]);
+	
+			expect(3);
+			var c = new Collision(map);
+			c.setCheckPoint(1,1);//待测点
+			var xrange = c.x();
+			assert.ok(xrange.length == 2,"范围应包含起始与结束两个点信息");
+			assert.equal(xrange[0], 32,"起点x坐标应从32开始");
+			assert.equal(xrange[1], 96,"终点x坐标应到96截止");
+		});
+		
+		QUnit.test("测试点[2,2],截止路线为左边，上边", function( assert ) {
+			block(0,[0,0],[3,0],[0,0],[0,3]);
+	
+			expect(3);
+			var c = new Collision(map);
+			c.setCheckPoint(2,2);//待测点
+			var xrange = c.x();
+			assert.ok(xrange.length == 2,"范围应包含起始与结束两个点信息");
+			assert.equal(xrange[0], 32,"起点x坐标应从32开始");
+			assert.equal(xrange[1], 1024,"终点x坐标应到96截止");
+		});
+		
+		QUnit.module("测试4*4小范围碰撞Y方向",{
+		  setup: function( assert ) {
+			reInitMap(0,4,4);
+		  }, 
+		  teardown: function( assert ) {
+			map = resetMap();
+		  }
+		});
+		QUnit.test("测试点[0,0],截止点为[0,3]", function( assert ) {
+			block(0,[0,3],[3,3],[3,0],[3,3]);
+	
+			expect(3);
+			var c = new Collision(map);
+			c.setCheckPoint(0,0);//待测点
+			var yrange = c.y();
+			assert.ok(yrange.length == 2,"范围应包含起始与结束两个点信息");
+			assert.equal(yrange[0], 0,"起点y坐标应从0开始");
+			assert.equal(yrange[1], 96,"终点y坐标应到96截止");
+		});
+	  QUnit.test("测试点[1,1],截止点为[1,3]", function( assert ) {
+			block(0,[0,3],[3,3],[3,0],[3,3]);
+	
+			expect(3);
+			var c = new Collision(map);
+			c.setCheckPoint(1,1);//待测点
+			var yrange = c.y();
+			assert.ok(yrange.length == 2,"范围应包含起始与结束两个点信息");
+			assert.equal(yrange[0], 0,"起点y坐标应从32开始");
+			assert.equal(yrange[1], 96,"终点y坐标应到96截止");
+		});
+		
+		QUnit.test("测试点[1,1],截止路线为最外围一圈", function( assert ) {
+			block(0,[0,3],[3,3],[3,0],[3,3]);
+			block(0,[0,0],[3,0],[0,0],[0,3]);
+	
+			expect(3);
+			var c = new Collision(map);
+			c.setCheckPoint(1,1);//待测点
+			var yrange = c.y();
+			assert.ok(yrange.length == 2,"范围应包含起始与结束两个点信息");
+			assert.equal(yrange[0], 32,"起点y坐标应从32开始");
+			assert.equal(yrange[1], 96,"终点y坐标应到96截止");
+		});
+		
+		QUnit.test("测试点[2,2],截止路线为左边，上边", function( assert ) {
+			block(0,[0,0],[3,0],[0,0],[0,3]);
+	
+			expect(3);
+			var c = new Collision(map);
+			c.setCheckPoint(2,2);//待测点
+			var yrange = c.y();
+			assert.ok(yrange.length == 2,"范围应包含起始与结束两个点信息");
+			assert.equal(yrange[0], 32,"起点y坐标应从32开始");
+			assert.equal(yrange[1], 768,"终点y坐标应到768截止");
+		});
+		
+	  
+	});
+  
+  </script>
+</head>
+<body>
+ 
+<div id="qunit"></div>
+ 
+</body>
+</html>

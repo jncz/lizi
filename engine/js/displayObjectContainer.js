@@ -159,15 +159,11 @@ define(["engine/Constants"],function(C){
 			}
 			
 			if(g.cfg.opt.regionPaint){
-				var animationDataCache = {};
+				var cache = {};//用来缓存已经绘制过的图像
 				for(var x=0;x<r.length;x++){
 					var eles = r[x];
-					if(!animationDataCache[x]){//存储同一层的元素
-						animationDataCache[x] = [];
-					}
 					for(var i=0;i<eles.length;i++){
 						var ele = eles[i];
-						//var key = (ele.x-unit/2)+"_"+(ele.y-unit/2)+"_"+ele.frameW+"_"+ele.frameH;
 						if(ele.animation() || !ele.painted){
 							var veles = getVEles(ele);//获取ele元素同位置的其他层的元素
 							//eles格式为：[{idx:1,data:[0,1]},{idx:2,data:[0,1]},...] 表示不同层的同一竖直位置的元素
@@ -175,8 +171,11 @@ define(["engine/Constants"],function(C){
 								var vele = veles[y];
 								var datas = vele.data;
 								for(var z=0;z<datas.length;z++){
-									if(animationDataCache[vele.idx].indexOf(datas[z])==-1){
-										animationDataCache[vele.idx].push(datas[z]);
+									if(!cache[vele.idx]){
+										cache[vele.idx] = [];
+									}
+									if(cache[vele.idx].indexOf(datas[z])==-1){
+										cache[vele.idx].push(datas[z]);
 									}
 								}
 							}
@@ -185,10 +184,9 @@ define(["engine/Constants"],function(C){
 				}
 				r = [];
 				for(var i=0;i<idxs.length;i++){
-					r.push(animationDataCache[i]);
+					r.push(cache[i]);
 				}
 			}
-			//console.log("Top Layer len: "+r[0].length);
 			return r;
 		},
 	};

@@ -3,7 +3,7 @@
 Note: 并不用于负责某个具体对象如何绘制
 */
 "use strict"
-define(["engine/Constants","engine/displayObjectContainer"],function(C,container){
+define(["engine/Constants","engine/displayObjectContainer","engine/FrameBuffer","engine/log/log"],function(C,container,frameBuffer,log){
 	var Stage2D = function(){
 		var that;
 		var hunit = unit/2;//means haft unit;
@@ -21,6 +21,27 @@ define(["engine/Constants","engine/displayObjectContainer"],function(C,container
 		//事件列表
 		var eventList = [];
 		
+		var draw = function(id,layer,cache){
+			var objs = layer;
+			for(var i=0;i<objs.length;i++)
+			{
+				var obj = objs[i];
+				obj.paint();
+			}
+			if(cache){
+				frameBuffer.cache(id,canvas);
+			}
+		};
+		
+		var cache = function(id,layer){
+			if(!layer){
+				//log.info("数据为空，跳过");
+				return;
+			}
+			context.clearRect(0,0,canvas.width,canvas.height);
+			draw(id,layer,true);
+		};
+
 		//初始化启动计时器
 		this.init=function()
 		{
@@ -49,19 +70,19 @@ define(["engine/Constants","engine/displayObjectContainer"],function(C,container
 				return;
 			}
 			
-			var allLayerDatas = container.all();
-			for(var x = 0;x<allLayerDatas.length;x++){
-				var displayObjectList = allLayerDatas[x];
+			var layerDatas = container.all();
+			for(var x = 0;x<layerDatas.length;x++){
+				var objs = layerDatas[x];
 				//因为最后添加的对象在最顶上,从画面理解,上层的内容会挡住下层的内容,所以我们的事件触发循序也应该是从显示列表的最后一位开始检测
-				for(var i = displayObjectList.length-1;i>=0;i--){
-					if(Math.abs(displayObjectList[i].x-e.pageX) <= displayObjectList[i].width/2 && Math.abs(displayObjectList[i].y-e.pageY) <= displayObjectList[i].height/2)
+				for(var i = objs.length-1;i>=0;i--){
+					if(Math.abs(objs[i].x-e.pageX) <= objs[i].width/2 && Math.abs(objs[i].y-e.pageY) <= objs[i].height/2)
 					{
 						for(var j=0;j<eventList.length;j++)
 						{
 							if(eventList[j].eventType==eventType)
 							{
 								//如果检测通过并且有相应的事件就回调事件模块中的函数然后把当前点击的对象通过回调函数传递出去,并且返回出去不再执行下一次的逻辑,这就好像上层的图像挡住了下层的对                        //象而导致你点不到
-								eventList[j].callback(displayObjectList[i]);
+								eventList[j].callback(objs[i]);
 								return;
 							}
 						}
@@ -98,15 +119,15 @@ define(["engine/Constants","engine/displayObjectContainer"],function(C,container
 		this.addChild=function(child,idx)
 		{
 			idx = idx || 0;
-			var displayObjectList = container.get(idx);
+			var objs = container.get(idx);
 			if(!this.exist(child,idx))
 			{
-				displayObjectList.push(child);
+				objs.push(child);
 			}else
 			{
 				//错误修正
-				displayObjectList.splice(displayObjectList.indexOf(child),1);
-				displayObjectList.push(child);
+				objs.splice(objs.indexOf(child),1);
+				objs.push(child);
 			}
 		}
 	 
@@ -114,13 +135,19 @@ define(["engine/Constants","engine/displayObjectContainer"],function(C,container
 		this.removeChild=function(child,idx)
 		{
 			idx = idx || 0;
-			var displayObjectList = container.get(idx);
+			var objs = container.get(idx);
 			if(this.exist(child,idx))
 			{
-				displayObjectList.splice(child,1);
+				objs.splice(child,1);
 			}
 		}
 		
+		this.addAniObj = function(obj){
+			container.addAni(obj);
+		}
+		this.removeAniObj = function(obj){
+			container.removeAni(obj);
+		}
 		this.addEventListener = function(eventObj){
 			if(eventList.indexOf(eventObj) == -1){
 				eventList.push(eventObj);
@@ -138,51 +165,59 @@ define(["engine/Constants","engine/displayObjectContainer"],function(C,container
 		*/
 		this.exist = function(ele,idx){
 			idx = idx || 0;
-			var displayObjectList = container.get(idx);
-			for(var i = 0;i<displayObjectList.length;i++){  
-				if(displayObjectList[i] == ele){  
+			var objs = container.get(idx);
+			for(var i = 0;i<objs.length;i++){  
+				if(objs[i] == ele){  
 				   return true;
 				 }  
 			}  
 			return false;
 		}
-		
+		/**
+		本方法，先绘制背景，再绘制动画层，最后绘制前景。次序不能乱
+		*/
 		this.paint = function(t){
 			//pp.mark("paint_start");
-			//清理画面
-			if(!g.cfg.opt.regionPaint){
-				context.clearRect(0,0,stageWidth,stageHeight);
-			}
+			context.clearRect(0,0,stageWidth,stageHeight);
 			//重置画布的透明度
 			context.globalAlpha=1;
-		 
-			var rectCleared = {};
-			var allLayerDatas = container.all();
-			for(var x = 0;x<allLayerDatas.length;x++){
-				var displayObjectList = allLayerDatas[x];
-				console.log("受影响的元素个数： "+displayObjectList.length);
-				//循环遍历显示对象
-				for(var i=0;i<displayObjectList.length;i++)
-				{
-					var obj = displayObjectList[i];
-					if(g.cfg.opt.regionPaint){
-						var key = (Math.floor(obj.x/unit))+"_"+(Math.floor(obj.y/unit))+"_"+obj.frameW+"_"+obj.frameH;
-						if(!rectCleared[key]){
-							context.clearRect(obj.x-hunit,obj.y-hunit,obj.frameW,obj.frameH);
-							//TODO 这里可以继续优化，只需要清除一次即可。根据之前的计算，活动元素所影响到的所有基层所占的面可以被一次清除掉。
-							rectCleared[key] = key;
-						}
-						
-					}
-					//调用显示对象的paint重绘方法
-					obj.paint();
-				}
+			
+			var bgcached = frameBuffer.cached("bg");
+			var fgcached = frameBuffer.cached("fg");
+			
+			var layerDatas;
+			var bglayer;
+			if(!bgcached){
+				layerDatas = container.all();
+				//背景
+				bglayer = layerDatas[0];
+				cache("bg",bglayer);
 			}
-			/**
-			setTimeout(function(){
-				requestAnimationFrame(that.paint);
-			},1000/20);
-			*/
+			
+			var fglayer;
+			if(!fgcached){
+				//前景
+				if(!layerDatas){
+					layerDatas = container.all();
+				}
+				fglayer = layerDatas[1];
+				cache("fg",fglayer);
+			}
+			
+			var cachedBG = frameBuffer.get("bg");
+			if(cachedBG)
+				cachedBG.paint(context);
+			//动画层
+			var anlayer = container.allAni();
+			if(anlayer)
+				draw("an",anlayer,false);
+			var cachedFG = frameBuffer.get("fg");
+			if(cachedFG)
+				cachedFG.paint(context);
+			
+			if(layerDatas && layerDatas.length > 2){
+				console.log("期望层数为2，分别为前景和背景。当前地图层数为："+layerDatas.length);
+			}
 			/**
 			pp.mark("paint_end");
 			pp.measure("paint","paint_start","paint_end");
