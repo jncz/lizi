@@ -10,7 +10,7 @@ var stage2d;//舞台对象
 
 
 define(["engine/ImgLoader","engine/JSONLoader","engine/XMLLoader","engine/Promise","engine/MovieClip",
-		"engine/DisplayObject","engine/Event","engine/displayObjectContainer","engine/AudioLoader","engine/globalScope","engine/Constants",
+		"engine/DisplayObject","engine/event","engine/displayObjectContainer","engine/AudioLoader","engine/globalScope","engine/Constants",
 		"engine/cache/Store"],
 	function(loader,jsonLoader,xmlLoader,Promise,MovieClip2D,Stage2D,Event2D,container,audioLoader,g,C,store){
 	var imageAddress = [];
